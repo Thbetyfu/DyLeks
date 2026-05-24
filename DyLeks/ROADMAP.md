@@ -178,6 +178,22 @@ Membangun aplikasi frontend responsif sebagai PWA dengan antarmuka ramah penggun
 - **Status:** 🎯 Planning
 - **Owner:** Frontend Team
 
+#### 2.7 Gamification & Reward System (`FE/pages/game.tsx`)
+- **File Target:** `FE/pages/game.tsx`, `FE/components/GameBoard.tsx`
+- **Task Detail:**
+  - Mini game berbasis level untuk memperkuat latihan membaca, menulis, dan tracing
+  - Reward system berupa poin, badge, dan progress star setelah menyelesaikan tugas
+  - Mode tantangan ringan untuk menjaga motivasi anak tanpa membuat beban kognitif berlebihan
+  - Feedback visual dan audio yang positif saat jawaban benar atau sesi selesai
+  - Dashboard progres sederhana untuk guru agar bisa melihat motivasi dan partisipasi anak
+- **Game Modes:**
+  - Matching huruf atau suku kata
+  - Tebak kata dari audio
+  - Trace the letter challenge
+  - Streak challenge harian
+- **Status:** 🎯 Planning
+- **Owner:** Frontend Team
+
 ---
 
 ## 🤖 Fase 3: AI Services & Model Integration (Q3 - Juli hingga September 2026)
@@ -504,6 +520,7 @@ Fase 4: Q4 (Oct-Dec 2026)
 | **Data Sync Reliability** | 100% | Zero data loss during offline-online transitions |
 | **Offline Functionality** | 100% | System works without internet |
 | **Student Engagement** | > 80% | % students complete all 5 levels |
+| **Gamification Engagement** | > 70% | % siswa aktif menyelesaikan game/reward loop |
 
 ---
 
