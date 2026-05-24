@@ -75,25 +75,32 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
 * Modul intervensi dinamis (`adaptive_engine.py`) yang melatih anak membaca menggunakan kombinasi tiga sensor: penglihatan (visual), pendengaran (auditori), dan gerakan tangan/sentuhan (kinestetik) secara berulang dan terstruktur.
 * **Dynamic Feedback:** Kesulitan kata akan meningkat atau menurun secara otomatis menyesuaikan kecepatan respons dan ketepatan anak saat menyelesaikan tantangan membaca offline.
 
-### E. Teacher’s Offline AI Pedagogical Copilot (Asisten Konsultasi Guru Luring)
+### E. Orton-Gillingham Cumulative Review & Phonogram Matrix
+
+* **Cumulative Spaced-Repetition System:** `adaptive_engine.py` diperluas menjadi `Cumulative Drill Engine` sehingga saat anak masuk Level 3, sistem otomatis menyisipkan 15–20% soal dari Level 1 dan Level 2 secara acak agar pola huruf lama tetap terjaga di memori jangka panjang.
+* **Indonesian Phonogram Mapping Database:** Skema `dyslexiai_local.db` diperbarui dengan tabel `indonesian_phonogram_matrix` untuk menyimpan urutan fonem bahasa Indonesia dari yang paling mudah ke yang paling sulit.
+* **Cakupan Fonetik:** Digraf Melayu seperti `NG`, `NY`, `KH`, `SY`, serta diftong `AI`, `AU`, `OI` dilatih lewat modul audio dan penulisan sebelum anak naik ke teks morfologi sains yang lebih panjang.
+* **Nilai Juri SFT:** Menunjukkan bahwa DyLeks tidak hanya adaptif, tetapi juga mengikuti prinsip inti Orton-Gillingham yang sistematis, kumulatif, dan berbasis urutan fonetik.
+
+### F. Teacher’s Offline AI Pedagogical Copilot (Asisten Konsultasi Guru Luring)
 
 * **Mekanisme AI:** Memanfaatkan modul `ollama_service.py` dan `chat.py` untuk menjalankan *Small Language Model* (SLM) yang telah dikompresi di dalam server laptop guru^^.
 * **Cara Kerja:** Karena di daerah 3T tidak ada psikolog atau pakar disleksia, guru sering kebingungan menghadapi anak yang memiliki pola kesalahan tertentu. Fitur ini menyediakan ruang *chatting* 100% offline^^. Guru bisa bertanya: *"Anak X di Level 3 sering membalik huruf b dan d, latihan taktil apa yang paling cocok untuk besok?"* AI lokal akan memberikan rekomendasi pedagogis berbasis metode Orton-Gillingham secara instan^^.
 * **Nilai Juri SFT:** Mengubah platform yang awalnya hanya "alat tes" menjadi **"asisten guru cerdas"** yang menyelesaikan kelangkaan tenaga ahli di pelosok.
 
-### F. Interactive Kinesthetic Tracer (Digital Whiteboard Stroke Analysis)
+### G. Interactive Kinesthetic Tracer (Digital Whiteboard Stroke Analysis)
 
 * **Mekanisme STEM:** Memanfaatkan modul `digital_whiteboard.py` pada antarmuka *tablet* atau *smartphone*^^.
 * **Cara Kerja:** Anak disleksia tidak hanya kesulitan melihat huruf, tetapi juga bingung arah menulisnya (misal menulis huruf 'd' dimulai dari garis vertikal dulu atau lingkaran dulu). Lewat fitur papan tulis digital ini, anak diminta menebalkan huruf di layar menggunakan jari^^. AI tidak hanya menilai hasil akhir tulisan, tetapi juga menganalisis **arah tarikan garis (stroke direction)** secara  *real-time* . Jika arahnya salah, sistem akan memberikan *feedback* visual yang interaktif.
 * **Nilai Juri SFT:** Sangat menonjolkan pilar *Engineering* dan *Technology* dalam STEM.
 
-### G. Local Mesh Dashboard & Analytics (Pusat Kendali Kelas Inklusi)
+### H. Local Mesh Dashboard & Analytics (Pusat Kendali Kelas Inklusi)
 
 * **Mekanisme Sistem:** Sinkronisasi multi-device terenkripsi berbasis Wi-Fi lokal ke pangkalan data `dyslexiai_local.db`^^.
 * **Cara Kerja:** Menyediakan halaman dasbor khusus untuk guru di laptop server^^. Ketika 5 hingga 10 siswa sedang melakukan tes menggunakan HP Android secara serentak di kelas, guru dapat memantau progres, kecepatan respons, dan skor risiko masing-masing anak secara *live* dari satu layar laptop^^.
 * **Nilai Juri SFT:** Memperkuat kriteria Kelayakan Implementasi. Juri melihat bahwa sistem ini sangat efisien dan siap pakai untuk skala satu kelas di sekolah pedalaman.
 
-### H. IoT Bio-Kinesthetic Handwriting Analyzer (Smart Writing Grip)
+### I. IoT Bio-Kinesthetic Handwriting Analyzer (Smart Writing Grip)
 
 * **Mekanisme Sistem:** Perangkat Smart Writing Grip menangkap data trajektori menulis anak langsung dari pensil fisik melalui protokol MQTT ke backend FastAPI^^.
 * **Fungsi AI Lokal:** Algoritma pattern recognition pada laptop server menganalisis proses kinematik penulisan^^.
@@ -102,7 +109,7 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
    * **Inversion Stroke Detection:** Menganalisis apakah arah putaran tangan terbalik (misal membentuk perut huruf 'd' atau 'b' dari bawah ke atas) yang menjadi ciri khas disgrafia/disleksia^^.
 * **Nilai Juri SFT:** Menambahkan dimensi *sensor fusion* dan *embedded system* sehingga solusi lebih kuat secara engineering.
 
-### I. Gamification & Reward System (Motivasi Belajar Anak)
+### J. Gamification & Reward System (Motivasi Belajar Anak)
 
 * **Mekanisme Sistem:** Menambahkan elemen permainan edukatif untuk menjaga motivasi anak selama screening dan latihan mandiri^^.
 * **Cara Kerja:** Anak memperoleh poin, badge, bintang progres, dan tantangan harian setelah menyelesaikan latihan membaca, menulis, atau tracing^^. Sistem memberikan feedback visual dan audio yang positif agar anak tetap tertarik belajar tanpa merasa terbebani^^.
