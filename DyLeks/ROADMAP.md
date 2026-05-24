@@ -15,6 +15,18 @@ Roadmap pengembangan DyLeks dirancang dalam **4 fase utama** dengan durasi kuart
 ### Tujuan Fase
 Membangun fondasi teknis yang kokoh untuk komunikasi multi-device lokal dan database management.
 
+### KPI Keberhasilan Fase 1
+- Backend FastAPI dapat dijalankan stabil di laptop server lokal tanpa error startup.
+- Database SQLite berhasil diinisialisasi dan bisa menyimpan serta membaca data dasar.
+- Endpoint screening v1 merespons request dengan format output yang konsisten.
+- Minimal 1 perangkat client berhasil register ke server lokal dan lolos health check.
+
+### Syarat Lanjut ke Fase 2
+- Struktur backend inti sudah selesai dan bisa dipakai untuk alur data dasar.
+- Skema database final sudah tervalidasi dan terdokumentasi.
+- Endpoint utama untuk screening dan device registration sudah berjalan.
+- Tidak ada error kritis pada alur start server, koneksi lokal, dan penyimpanan data.
+
 ### Deliverables
 
 #### 1.1 Backend FastAPI Server Setup
@@ -73,6 +85,18 @@ Membangun fondasi teknis yang kokoh untuk komunikasi multi-device lokal dan data
 
 ### Tujuan Fase
 Membangun aplikasi frontend responsif sebagai PWA dengan antarmuka ramah pengguna (anak disleksia dan guru).
+
+### KPI Keberhasilan Fase 2
+- PWA dapat di-install dan dibuka dari browser mobile tanpa ketergantungan internet.
+- Seluruh halaman inti tampil dengan layout responsif di laptop dan smartphone.
+- Alur screening, listen card, tracer, dashboard, dan summary dapat diakses tanpa error UI kritis.
+- Caching offline berjalan untuk aset inti dan halaman yang sering dipakai.
+
+### Syarat Lanjut ke Fase 3
+- Semua antarmuka utama sudah selesai dan bisa dipakai end-to-end.
+- Integrasi frontend ke backend berjalan di jaringan lokal.
+- Tidak ada bug blocker pada navigasi, input, audio playback, dan tampilan hasil.
+- PWA sudah lolos uji dasar installability dan offline behavior.
 
 ### Deliverables
 
@@ -160,6 +184,18 @@ Membangun aplikasi frontend responsif sebagai PWA dengan antarmuka ramah penggun
 
 ### Tujuan Fase
 Integrasi model AI lokal untuk OCR, text matching, dan pedagogical recommendations.
+
+### KPI Keberhasilan Fase 3
+- Model TrOCR berhasil diekspor ke ONNX dan dapat di-load oleh service lokal.
+- OCR menghasilkan prediksi yang stabil dengan target CER sesuai batas yang ditetapkan.
+- Proses inferensi berjalan cukup ringan untuk perangkat low-spec yang menjadi target.
+- Fuzzy matching, risk assessment, dan copilot Ollama menghasilkan output yang konsisten dan relevan.
+
+### Syarat Lanjut ke Fase 4
+- Seluruh service AI inti sudah terintegrasi ke backend.
+- Output OCR, matching, dan risk scoring sudah dapat dipakai oleh frontend.
+- Model dan service berjalan stabil dalam skenario offline lokal.
+- Minimal ada uji sampel yang membuktikan hasil AI layak dipakai untuk testing integrasi.
 
 ### Deliverables
 
@@ -269,6 +305,18 @@ Integrasi model AI lokal untuk OCR, text matching, dan pedagogical recommendatio
 
 ### Tujuan Fase
 Full integration end-to-end, comprehensive testing, dan siap deploy ke lapangan.
+
+### KPI Keberhasilan Fase 4
+- Alur end-to-end dari kamera sampai hasil risiko berjalan tanpa putus pada pengujian.
+- Sistem tetap stabil saat dipakai beberapa device secara bersamaan di jaringan lokal.
+- Offline sync tidak menyebabkan kehilangan data pada skenario putus-sambung jaringan.
+- Dokumentasi, deployment script, dan security baseline sudah siap dipakai sekolah pilot.
+
+### Syarat Rilis / Go-Live
+- Semua test kritis lulus dan bug blocker sudah ditutup.
+- Performa minimal memenuhi target yang sudah didefinisikan di bagian Success Metrics.
+- Paket instalasi dan panduan penggunaan sudah final.
+- Pilot testing menunjukkan sistem layak dipakai di lingkungan sekolah 3T.
 
 ### Deliverables
 
