@@ -1,7 +1,7 @@
 ---
 # `DyLeks`
 
-**Ekosistem Edge-AI Offline & PWA Multi-Device untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
+**Ekosistem Edge-AI Offline, PWA Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
 ---
 ## 1. Masalah: "The 3T Identification Vacuum" di Indonesia
 
@@ -24,6 +24,7 @@ Di daerah 3T, tantangannya berlipat ganda:
 * **Laptop-as-a-Server Hub:** Laptop guru bertindak sebagai pangkalan data lokal (`dyslexiai_local.db`) dan mesin pemroses AI utama.
 * **Mobile-as-a-Client PWA:** Aplikasi *Front-End* dikemas sebagai *Progressive Web App* (PWA) yang dapat diakses dan diinstal langsung ke *smartphone* Android/iOS milik guru atau orang tua siswa via browser tanpa perlu akses ke Play Store/App Store.
 * **Physical-to-Digital Pipeline:** Anak tetap menulis di atas kertas fisik menggunakan pensil untuk melatih motorik halus, lalu hasilnya difoto menggunakan kamera *smartphone* untuk dikirim ke *local server* laptop guna dianalisis.
+* **Bio-Kinesthetic Handwriting Tracking:** Anak tetap menulis secara natural di atas kertas fisik menggunakan pensil biasa yang dipasangi Smart Writing Grip. Sensor IMU pada grip menangkap mikro-gerakan (akselerasi dan rotasi) tangan anak saat membentuk huruf, sehingga sistem memperoleh dimensi data kinematik baru sebelum kertas difoto untuk proses OCR.
 * **Privacy-First Edge Computing:** Seluruh inferensi AI berjalan di sisi lokal perangkat, menjamin keamanan data tumbuh kembang anak-anak di pedalaman.
 
 ---
@@ -34,14 +35,17 @@ Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat 
 
 | Komponen                            | Teknologi                               | Peran & Optimalisasi 3T                                                                                                                                      |
 | ----------------------------------- | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Frontend Client**           | **Next.js 14 + PWA**              | Satu codebase responsif untuk Laptop & Mobile; performa rendering cepat dan interaksi multisensory luring.                                                   |
-| **Backend Server**            | **FastAPI**                       | REST API asinkron berlatensi rendah yang ditanam di Laptop Guru untuk melayani banyak request HP siswa secara simultan.                                      |
-| **AI OCR Engine**             | **TrOCR + ONNX Web**              | Model Vision-Transformer (Microsoft/trocr-base) yang dikompresi ke format ONNX agar inferensi tulisan tangan berjalan sangat ringan tanpa butuh GPU diskrit. |
-| **Fuzzy Matching**            | **RapidFuzz**                     | Algoritma pencocokan kata lokal dengan efisiensi tinggi untuk toleransi kesalahan ketik ringan pada Listen Card.                                             |
-| **Audio Scaffolding**         | **Python TTS Generator**          | Memproduksi petunjuk vokal luring (`gen_audio.py`) untuk memandu siswa pelosok dengan pendekatan multisensori.                                             |
-| **Local Database**            | **SQLite**                        | Penyimpanan sesi, profil anak, dan rekam medis kognitif luring terpusat di server laptop kelas.                                                              |
-| **Offline LLM Engine**        | **Ollama + Phi-3 / Qwen-1.5-B**   | Menjalankan Small Language Model (SLM) terkompresi secara lokal di laptop untuk mengotaki Teacher's Copilot tanpa internet.                                  |
-| **Kinesthetic Tracer Engine** | **HTML5 Canvas / Pointer Events** | Menangkap koordinat, tekanan, dan stroke direction secara real-time di layar HP/Tablet tanpa membebani memori perangkat.                                     |
+| **Frontend Client** | **Next.js 14 + PWA** | UI/UX responsif untuk Laptop & Mobile; performa rendering luring. |
+| **Backend Server** | **FastAPI + MQTT Client** | Mengelola REST API sekaligus menjadi subscriber pesan MQTT untuk menangkap data sensor dari grip secara asinkron. |
+| **IoT Microcontroller** | **ESP32 DevKit v1** | Menjadi otak pada grip pensil; membaca data sensorik mentah lokal dan mentransmisikannya via Wi-Fi lokal kelas. |
+| **Hardware Sensor** | **IMU MPU6050 (6-Axis)** | Mengombinasikan 3-axis Accelerometer dan 3-axis Gyroscope untuk mendeteksi getaran, kecepatan, dan sudut kemiringan tarikan garis tangan anak. |
+| **IoT Broker Protocol** | **Eclipse Mosquitto (MQTT)** | Message broker ringan yang di-host lokal di laptop guru untuk menjamin pengiriman data sensorik berlatensi rendah tanpa internet. |
+| **AI OCR Engine** | **TrOCR + ONNX Web** | Model Vision-Transformer (Microsoft/trocr-base) yang dikompresi ke format ONNX agar inferensi tulisan tangan berjalan sangat ringan tanpa butuh GPU diskrit. |
+| **Fuzzy Matching** | **RapidFuzz** | Algoritma pencocokan kata lokal dengan efisiensi tinggi untuk toleransi kesalahan ketik ringan pada Listen Card. |
+| **Audio Scaffolding** | **Python TTS Generator** | Memproduksi petunjuk vokal luring (`gen_audio.py`) untuk memandu siswa pelosok dengan pendekatan multisensori. |
+| **Local Database** | **SQLite** | Menyimpan koordinat sensorik dan pola kinematik menulis anak bersama hasil akhir asesmen. |
+| **Offline LLM Engine** | **Ollama + Phi-3 / Qwen-1.5-B** | Menjalankan Small Language Model (SLM) terkompresi secara lokal di laptop untuk mengotaki Teacher's Copilot tanpa internet. |
+| **Kinesthetic Tracer Engine** | **Smart Writing Grip + MQTT Telemetry** | Menangkap data trajektori, tremor, dan hesitation saat anak menulis di kertas fisik. |
 
 ---
 
@@ -89,7 +93,16 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
 * **Cara Kerja:** Menyediakan halaman dasbor khusus untuk guru di laptop server^^. Ketika 5 hingga 10 siswa sedang melakukan tes menggunakan HP Android secara serentak di kelas, guru dapat memantau progres, kecepatan respons, dan skor risiko masing-masing anak secara *live* dari satu layar laptop^^.
 * **Nilai Juri SFT:** Memperkuat kriteria Kelayakan Implementasi. Juri melihat bahwa sistem ini sangat efisien dan siap pakai untuk skala satu kelas di sekolah pedalaman.
 
-### H. Gamification & Reward System (Motivasi Belajar Anak)
+### H. IoT Bio-Kinesthetic Handwriting Analyzer (Smart Writing Grip)
+
+* **Mekanisme Sistem:** Perangkat Smart Writing Grip menangkap data trajektori menulis anak langsung dari pensil fisik melalui protokol MQTT ke backend FastAPI^^.
+* **Fungsi AI Lokal:** Algoritma pattern recognition pada laptop server menganalisis proses kinematik penulisan^^.
+   * **Hesitation Detection:** Mengukur jeda waktu berhenti (ragu-ragu) anak saat menyambung suku kata^^.
+   * **Tremor Analysis:** Mendeteksi getaran tangan berlebih akibat kecemasan kognitif (*anxiety spike*)^^.
+   * **Inversion Stroke Detection:** Menganalisis apakah arah putaran tangan terbalik (misal membentuk perut huruf 'd' atau 'b' dari bawah ke atas) yang menjadi ciri khas disgrafia/disleksia^^.
+* **Nilai Juri SFT:** Menambahkan dimensi *sensor fusion* dan *embedded system* sehingga solusi lebih kuat secara engineering.
+
+### I. Gamification & Reward System (Motivasi Belajar Anak)
 
 * **Mekanisme Sistem:** Menambahkan elemen permainan edukatif untuk menjaga motivasi anak selama screening dan latihan mandiri^^.
 * **Cara Kerja:** Anak memperoleh poin, badge, bintang progres, dan tantangan harian setelah menyelesaikan latihan membaca, menulis, atau tracing^^. Sistem memberikan feedback visual dan audio yang positif agar anak tetap tertarik belajar tanpa merasa terbebani^^.
@@ -110,15 +123,17 @@ DyLeks/
 │   │   │   ├── screening.py      # Endpoint manajemen sesi skrining anak
 │   │   │   ├── learning.py       # Endpoint mesin belajar adaptif
 │   │   │   └── chat.py           # Endpoint asisten panduan guru luring
+│   │   ├── services/
+│   │   │   ├── mqtt_handler.py   # Mengelola komunikasi data MQTT dari ESP32
+│   │   │   ├── kinesthetic_analyzer.py # Ekstraksi fitur tremor & kecepatan menulis
+│   │   │   ├── adaptive_engine.py# Otak algoritma personalisasi tingkat kesulitan
+│   │   │   ├── image_processor.py# Pipeline prapemrosesan gambar tulisan tangan
+│   │   │   ├── trocr_service.py  # Model Vision-Transformer berbasis ONNX Runtime
+│   │   │   └── ocr_service.py    # Abstraksi utilitas OCR teks luring
 │   │   ├── models/               # ORM Skema SQLite (user, child_profile, session)
 │   │   ├── schemas/              # Pydantic data validation schemas
-│   │   └── services/
-│   │       ├── adaptive_engine.py# Otak algoritma personalisasi tingkat kesulitan
-│   │       ├── image_processor.py# Pipeline prapemrosesan gambar tulisan tangan
-│   │       ├── trocr_service.py  # Model Vision-Transformer berbasis ONNX Runtime
-│   │       └── ocr_service.py    # Abstraksi utilitas OCR teks luring
 │   ├── gen_audio.py              # Skrip generator audio instruksi multisensori
-│   ├── requirements.txt          # Dependensi dependensi Python backend
+│   ├── requirements.txt          # Dependensi Python backend (tambahkan paho-mqtt)
 │   └── wsgi.py
 │
 ├── FE/                           # Next.js Frontend (Multi-Device PWA Client)
@@ -131,6 +146,11 @@ DyLeks/
 │   ├── public/assets/            # File audio instruksi (instruksi_ba.mp3, dsb)
 │   ├── styles/                   # Glassmorphic UI/UX styling ramah anak disleksia
 │   └── package.json
+
+├── IoT_Firmware/                 # Embedded System Code (C++/Arduino)
+│   └── smart_grip_esp32/
+│       ├── smart_grip_esp32.ino  # Skrip utama pembacaan MPU6050 & Wi-Fi Client MQTT
+│       └── config.h              # Konfigurasi IP lokal server Laptop Guru
 │
 └── ML_Pipeline/                  # Repositori Pelatihan & Kompresi Model AI
     ├── notebooks/                # Eksplorasi Data Analisis (EDA) tulisan tangan anak
@@ -156,12 +176,7 @@ DyLeks/
 3. Jalankan server FastAPI dengan mengekspos IP lokal jaringan:
 
 ```bash
-
-```
-
 uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-
-
 ### Tambahan untuk Fitur Teacher's Copilot (Ollama Setup):
 
 1. Unduh dan instal Ollama di perangkat server (Laptop).
@@ -170,7 +185,13 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
    >
 3. Pastikan konfigurasi URL Ollama pada `BE/app/core/config.py` sudah mengarah ke instans lokal tersebut.
 
-```
+### IoT Hardware Setup (Simulasi Kelas 3T):
+
+1. Pastikan Laptop Server sudah menginstal Eclipse Mosquitto MQTT Broker dan berjalan secara lokal.
+2. Buka berkas `IoT_Firmware/smart_grip_esp32/config.h`, masukkan SSID Wi-Fi Hotspot lokal kelas dan IP Lokal Laptop Server.
+3. Flash program `smart_grip_esp32.ino` ke perangkat menggunakan Arduino IDE atau PlatformIO.
+4. Nyalakan Grip Pensil, perangkat akan otomatis terhubung ke router kelas dan mulai melakukan streaming data sensor saat pensil digerakkan.
+
    *(Catatan: Penggunaan `--host 0.0.0.0` wajib dilakukan agar server FastAPI dapat menerima koneksi dari HP pintar siswa yang terhubung dalam satu jaringan Wi-Fi lokal).*
 
 ### Langkah Menjalankan Aplikasi Klien (Mobile / Laptop Siswa):
@@ -179,5 +200,3 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 3. Sesuaikan konfigurasi URL dasar API klien ke alamat IP lokal server Laptop Guru.
 4. Jalankan aplikasi web: `npm run dev`[cite: 1]
 5. Buka browser di ponsel pintar, ketik alamat IP lokal laptop server, klik *"Add to Home Screen"* untuk menginstalnya sebagai aplikasi PWA luring murni.
-
-```
