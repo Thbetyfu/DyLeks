@@ -116,6 +116,16 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
 * **Contoh Mode Game:** Matching huruf atau suku kata, tebak kata dari audio, trace-the-letter challenge, dan streak challenge harian^^.
 * **Nilai Juri SFT:** Menambah aspek *engagement* dan *usability* sehingga sistem tidak hanya fungsional, tetapi juga lebih menarik bagi anak disleksia.
 
+### K. Visual Use Case Ringkas per Fitur
+
+| Fitur | Use Case Utama | Output Visual |
+|---|---|---|
+| Screening | Guru memilih level, anak menulis, sistem memberi skor | Progress bar, skor risiko, hasil OCR |
+| Listen Card | Anak mendengar audio lalu menulis ulang | Kartu audio, highlight warna, feedback benar/salah |
+| OG Cumulative Review | Sistem menyisipkan materi lama saat level baru | Matriks fonogram, jadwal review, indikator mastery |
+| IoT Handwriting Analyzer | Grip mengirim data tulisan ke server | Grafik tremor, hesitation, stroke pattern |
+| Gamification | Anak menyelesaikan misi dan mendapat reward | Badge, bintang, poin, streak harian |
+
 ---
 
 ## 5. Struktur Arsitektur Kode Utama
@@ -207,3 +217,67 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 3. Sesuaikan konfigurasi URL dasar API klien ke alamat IP lokal server Laptop Guru.
 4. Jalankan aplikasi web: `npm run dev`[cite: 1]
 5. Buka browser di ponsel pintar, ketik alamat IP lokal laptop server, klik *"Add to Home Screen"* untuk menginstalnya sebagai aplikasi PWA luring murni.
+
+---
+
+## 7. BAB Baru: Flowchart Diagram & Use Case Diagram
+
+### 7.1 Flowchart Diagram Alur Sistem
+
+```mermaid
+flowchart TD
+   A[Guru membuka aplikasi DyLeks] --> B[Anak memilih aktivitas: Screening / Latihan / Game]
+   B --> C{Aktivitas yang dipilih?}
+
+   C -->|Screening| D[Anak menulis di kertas fisik]
+   D --> E[Smart Writing Grip menangkap data IMU]
+   E --> F[ESP32 kirim data via MQTT ke laptop server]
+   F --> G[FastAPI menerima data dan menyimpan ke SQLite]
+   G --> H[OCR + Fuzzy Matching + Risk Scoring]
+   H --> I[Hasil tampil di dashboard guru dan ringkasan anak]
+
+   C -->|Latihan| J[Audio Listen Card diputar]
+   J --> K[Anak menulis ulang jawaban]
+   K --> L[Feedback visual dan level adaptif]
+   L --> M[Adaptive Engine menyusun soal berikutnya]
+
+   C -->|Game| N[Anak menyelesaikan mini game]
+   N --> O[Poin, badge, dan streak diperbarui]
+   O --> P[Progress anak disimpan ke database lokal]
+
+   H --> Q[Optional: Copilot guru memberi rekomendasi]
+   Q --> I
+```
+
+### 7.2 Use Case Diagram Sistem DyLeks
+
+```mermaid
+flowchart LR
+   Teacher((Guru))
+   Student((Anak))
+   Server[(Laptop Server / FastAPI)]
+   Grip[(Smart Writing Grip / ESP32)]
+   DB[(SQLite Local Database)]
+   MQTT[(MQTT Broker Mosquitto)]
+
+   Teacher -->|mulai screening| Server
+   Teacher -->|pantau dashboard| Server
+   Teacher -->|bertanya rekomendasi| Server
+
+   Student -->|menulis di kertas| Grip
+   Student -->|mengerjakan listen card| Server
+   Student -->|bermain gamifikasi| Server
+
+   Grip -->|kirim data IMU| MQTT
+   MQTT -->|publish sensor data| Server
+   Server -->|simpan hasil| DB
+   Server -->|ambil histori| DB
+   Server -->|tampilkan hasil| Teacher
+   Server -->|feedback belajar| Student
+```
+
+### 7.3 Use Case Ringkas per Aktor
+
+* **Guru:** Memulai skrining, memantau progress kelas, melihat hasil risiko, dan meminta rekomendasi intervensi.
+* **Anak:** Menulis di kertas fisik, mengerjakan Listen Card, menyelesaikan mini game, dan menerima reward progres.
+* **Sistem Lokal:** Menerima data MQTT, menjalankan OCR, menghitung risiko, menyimpan histori, dan menampilkan visualisasi.
