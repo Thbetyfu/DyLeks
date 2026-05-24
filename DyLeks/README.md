@@ -89,6 +89,13 @@ Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* loka
 * **Cara Kerja:** Menyediakan halaman dasbor khusus untuk guru di laptop server^^. Ketika 5 hingga 10 siswa sedang melakukan tes menggunakan HP Android secara serentak di kelas, guru dapat memantau progres, kecepatan respons, dan skor risiko masing-masing anak secara *live* dari satu layar laptop^^.
 * **Nilai Juri SFT:** Memperkuat kriteria Kelayakan Implementasi. Juri melihat bahwa sistem ini sangat efisien dan siap pakai untuk skala satu kelas di sekolah pedalaman.
 
+### H. Gamification & Reward System (Motivasi Belajar Anak)
+
+* **Mekanisme Sistem:** Menambahkan elemen permainan edukatif untuk menjaga motivasi anak selama screening dan latihan mandiri^^.
+* **Cara Kerja:** Anak memperoleh poin, badge, bintang progres, dan tantangan harian setelah menyelesaikan latihan membaca, menulis, atau tracing^^. Sistem memberikan feedback visual dan audio yang positif agar anak tetap tertarik belajar tanpa merasa terbebani^^.
+* **Contoh Mode Game:** Matching huruf atau suku kata, tebak kata dari audio, trace-the-letter challenge, dan streak challenge harian^^.
+* **Nilai Juri SFT:** Menambah aspek *engagement* dan *usability* sehingga sistem tidak hanya fungsional, tetapi juga lebih menarik bagi anak disleksia.
+
 ---
 
 ## 5. Struktur Arsitektur Kode Utama
@@ -119,6 +126,7 @@ DyLeks/
 │   │   ├── index.tsx             # Halaman utama dasbor DyLeks
 │   │   ├── screening.tsx         # Antarmuka ambil foto tulisan & tes anak
 │   │   ├── latihan.tsx           # Antarmuka Listen Card mode multisensori
+│   │   ├── game.tsx              # Antarmuka gamifikasi dan reward system
 │   │   └── summary.tsx           # Visualisasi pola kesalahan dan rekomendasi guru
 │   ├── public/assets/            # File audio instruksi (instruksi_ba.mp3, dsb)
 │   ├── styles/                   # Glassmorphic UI/UX styling ramah anak disleksia
