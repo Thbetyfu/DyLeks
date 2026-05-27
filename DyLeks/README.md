@@ -226,70 +226,66 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 ```mermaid
 flowchart TD
-   A[Guru membuka aplikasi DyLeks] --> B[Anak memilih aktivitas: Screening / Latihan / Game]
-   B --> C{Aktivitas yang dipilih?}
+    A["Guru membuka aplikasi DyLeks"] --> B["Anak memilih aktivitas: Screening, Latihan, Game"]
+    B --> C{"Aktivitas yang dipilih?"}
 
-   C -->|Screening| D[Anak menulis di kertas fisik]
-   D --> E[Smart Writing Grip menangkap data IMU]
-   E --> F[ESP32 kirim data via MQTT ke laptop server]
-   F --> G[FastAPI menerima data dan menyimpan ke SQLite]
-   G --> H[OCR + Fuzzy Matching + Risk Scoring]
-   H --> I[Hasil tampil di dashboard guru dan ringkasan anak]
+    C -->|Screening| D["Anak menulis di kertas fisik"]
+    D --> E["Smart Writing Grip menangkap data IMU"]
+    E --> F["ESP32 kirim data via MQTT ke laptop server"]
+    F --> G["FastAPI menerima data dan menyimpan ke SQLite"]
+    G --> H["OCR + Fuzzy Matching + Risk Scoring"]
+    H --> I["Hasil tampil di dashboard guru dan ringkasan anak"]
 
-   C -->|Latihan| J[Audio Listen Card diputar]
-   J --> K[Anak menulis ulang jawaban]
-   K --> L[Feedback visual dan level adaptif]
-   L --> M[Adaptive Engine menyusun soal berikutnya]
+    C -->|Latihan| J["Audio Listen Card diputar"]
+    J --> K["Anak menulis ulang jawaban"]
+    K --> L["Feedback visual dan level adaptif"]
+    L --> M["Adaptive Engine menyusun soal berikutnya"]
 
-   C -->|Game| N[Anak menyelesaikan mini game]
-   N --> O[Poin, badge, dan streak diperbarui]
-   O --> P[Progress anak disimpan ke database lokal]
+    C -->|Game| N["Anak menyelesaikan mini game"]
+    N --> O["Poin, badge, dan streak diperbarui"]
+    O --> P["Progress anak disimpan ke database lokal"]
 
-   H --> Q[Optional: Copilot guru memberi rekomendasi]
-   Q --> I
+    H --> Q["Optional: Copilot guru memberi rekomendasi"]
+    Q --> I
 ```
 
 ### 7.2 Use Case Diagram UML Sistem DyLeks
 
-```plantuml
-@startuml
-left to right direction
+```mermaid
+graph LR
+    Siswa(("Siswa"))
+    Guru(("Guru"))
+    Psikolog(("Psikolog"))
 
-actor Siswa
-actor Guru
-actor Psikolog
+    subgraph App ["Aplikasi DyLeks"]
+        UC1["Screening tulis tangan"]
+        UC2["Listen Card"]
+        UC3["Gamifikasi belajar"]
+        UC4["Memulai sesi belajar"]
+        UC5["Memantau progres kelas"]
+        UC6["Meminta rekomendasi"]
+        UC7["Review hasil asesmen"]
+        UC8["Menilai kebutuhan intervensi"]
+        UC9["Menyusun rekomendasi tindak lanjut"]
+    end
 
-rectangle "Aplikasi DyLeks" {
-   usecase "Screening tulis tangan" as UC1
-   usecase "Listen Card" as UC2
-   usecase "Gamifikasi belajar" as UC3
-   usecase "Memulai sesi belajar" as UC4
-   usecase "Memantau progres kelas" as UC5
-   usecase "Meminta rekomendasi" as UC6
-   usecase "Review hasil asesmen" as UC7
-   usecase "Menilai kebutuhan intervensi" as UC8
-   usecase "Menyusun rekomendasi tindak lanjut" as UC9
-}
+    Siswa --> UC1
+    Siswa --> UC2
+    Siswa --> UC3
 
-Siswa --> UC1
-Siswa --> UC2
-Siswa --> UC3
+    Guru --> UC4
+    Guru --> UC5
+    Guru --> UC6
 
-Guru --> UC4
-Guru --> UC5
-Guru --> UC6
+    Psikolog --> UC7
+    Psikolog --> UC8
+    Psikolog --> UC9
 
-Psikolog --> UC7
-Psikolog --> UC8
-Psikolog --> UC9
-
-UC1 ..> UC5 : data hasil
-UC2 ..> UC5 : progres latihan
-UC3 ..> UC5 : reward & streak
-UC5 ..> UC7 : ringkasan asesmen
-UC6 ..> UC9 : saran intervensi
-
-@enduml
+    UC1 -.->|data hasil| UC5
+    UC2 -.->|progres latihan| UC5
+    UC3 -.->|reward & streak| UC5
+    UC5 -.->|ringkasan asesmen| UC7
+    UC6 -.->|saran intervensi| UC9
 ```
 
 ### 7.3 Use Case Ringkas per Aktor
@@ -317,26 +313,26 @@ UC6 ..> UC9 : saran intervensi
 
 ```mermaid
 flowchart LR
-   Student((Siswa))
-   Teacher((Guru))
-   Psychologist((Psikolog))
-   App[(Aplikasi DyLeks)]
-   Server[(FastAPI + SQLite + MQTT)]
-   Grip[(Smart Writing Grip)]
+    Student(("Siswa"))
+    Teacher(("Guru"))
+    Psychologist(("Psikolog"))
+    App[("Aplikasi DyLeks")]
+    Server[("FastAPI + SQLite + MQTT")]
+    Grip[("Smart Writing Grip")]
 
-   Student -->|menulis & belajar| App
-   Student -->|mengikuti gamifikasi| App
-   Teacher -->|memulai sesi & memantau dashboard| App
-   Teacher -->|bertanya rekomendasi| App
-   Psychologist -->|melihat ringkasan asesmen| App
-   Psychologist -->|memberi evaluasi/intervensi| App
+    Student -->|"menulis & belajar"| App
+    Student -->|"mengikuti gamifikasi"| App
+    Teacher -->|"memulai sesi & memantau"| App
+    Teacher -->|"bertanya rekomendasi"| App
+    Psychologist -->|"melihat ringkasan asesmen"| App
+    Psychologist -->|"memberi evaluasi"| App
 
-   Grip -->|kirim data IMU| Server
-   App -->|kirim request data| Server
-   Server -->|hasil OCR, skor risiko, histori| App
-   App -->|laporan visual| Student
-   App -->|dashboard kelas| Teacher
-   App -->|ringkasan klinis| Psychologist
+    Grip -->|"kirim data IMU"| Server
+    App -->|"kirim request data"| Server
+    Server -->|"hasil OCR, skor risiko, histori"| App
+    App -->|"laporan visual"| Student
+    App -->|"dashboard kelas"| Teacher
+    App -->|"ringkasan klinis"| Psychologist
 ```
 
 ### 7.6 Alur Penggunaan Aplikasi Berdasarkan Peran
