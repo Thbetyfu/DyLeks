@@ -547,30 +547,60 @@ Fase 4: Q4 (Oct-Dec 2026)
 
 ---
 
-## 📝 Next Steps (Prioritas Minggu Depan)
+## 📝 Rencana Kerja Prioritas & Langkah Strategis (Sprint Checklist)
 
-1. **Backend Team:**
-   - [ ] Initialize FastAPI project structure
-   - [ ] Design SQLite schema (finalize design review)
-   - [ ] Setup CI/CD pipeline (GitHub Actions)
+Untuk memastikan kelancaran pengembangan ekosistem **DyLeks** luring, rencana kerja dibagi menjadi Sprints terarah dengan fokus pada perbaikan bug kritis (*pre-requisites*) sebelum masuk ke implementasi fitur baru. Pengembangan perangkat keras IoT diposisikan pada fase akhir karena keterbatasan ketersediaan fisik alat.
 
-2. **Frontend Team:**
-   - [ ] Setup Next.js 14 + PWA configuration
-   - [ ] Design UI mockups (Figma)
-   - [ ] Component library setup
+### 🛑 Sprint 0: Critical Bug Fixes & Port Alignment (Selesai ✅)
+*Target: Menstabilkan fondasi backend SQLite dan menyelaraskan konfigurasi port luring.*
 
-3. **ML Team:**
-   - [ ] Collect/prepare tulisan tangan anak dataset
-   - [ ] Setup TrOCR fine-tuning environment (Colab/local)
-   - [ ] ONNX export testing
+*   **Backend Database Restructuring:**
+    *   [x] Hapus redundansi dan perbaiki berkas `BE/app/models/screening_session.py` agar mengimplementasikan model database SQLAlchemy (`Base`), bukan Pydantic `BaseModel`.
+    *   [x] Hubungkan model `ScreeningSession` dengan relasi kunci asing (*Foreign Key*) ke tabel `child_profiles`.
+    *   [x] Pastikan `Base.metadata.create_all(bind=engine)` di `BE/app/main.py` berhasil dieksekusi secara otomatis dan membuat seluruh tabel luring di berkas `dyslexiai_local.db`.
+*   **Port Setup & API Address Alignment (Solusi Mixed Content):**
+    *   [x] Konfigurasi port dev server Next.js di `FE/package.json` dan `FE/next.config.js` untuk berjalan di **port 3001** (HTTP).
+    *   [x] Konfigurasi port FastAPI di `BE/app/main.py` atau `wsgi.py` agar berjalan di **port 3002** (HTTP).
+    *   [x] Perbarui alamat pemanggilan Fetch API di `FE/pages/screening.tsx` dan `FE/pages/latihan.tsx` dari port `8000` (atau `127.0.0.1:8000`) ke `http://localhost:3002/api/v1/...` (atau menggunakan port `3002` dinamis jaringan lokal).
 
-4. **Product Team:**
-   - [ ] Finalize feature specifications document
-   - [ ] Identify pilot schools untuk testing
-   - [ ] Create detailed user stories for backlog
+### ⚙️ Sprint 1: Core Offline Services Development (Prioritas Saat Ini - Minggu Ini)
+*Target: Mengisi berkas skeleton/kosong di backend dengan algoritma adaptif luring berbasis visual.*
+
+*   **Adaptive Engine (Orton-Gillingham Principles):**
+    *   [ ] Tulis logika di `BE/app/services/adaptive_engine.py` untuk mengelola pengacakan soal (*Spaced Repetition*) dengan menyisipkan 15–20% materi lama.
+    *   [ ] Hubungkan backend API router `learning.py` dengan `adaptive_engine.py` untuk pengambilan soal dinamis.
+*   **Scoring & Visual Risk Assessment:**
+    *   [ ] Tulis logika penilaian di `BE/app/services/scoring_service.py` untuk mengolah metrik skor risiko berbasis data visual hasil OCR TrOCR dan prapemrosesan gambar.
+
+### 🤖 Sprint 2: AI OCR & Local LLM Optimization
+*Target: Optimalisasi performa inferensi luring pada perangkat sekolah berspesifikasi rendah.*
+
+*   **TrOCR ONNX Runtime Web Integration:**
+    *   [ ] Selesaikan skrip `ML_Pipeline/src/export_onnx.py` untuk mengonversi model `microsoft/trocr-base-handwritten` ke ONNX dengan kuantisasi data (INT8) agar ukurannya di bawah 100MB.
+    *   [ ] Optimasi pipeline preprocessing gambar (OTSU thresholding dan deskewing) di `image_processor.py` agar waktu pemrosesan di bawah 500ms di laptop Core i3.
+*   **Ollama SLM Configuration:**
+    *   [ ] Buat dokumentasi panduan konfigurasi model bahasa kecil (seperti Qwen 1.5-1.8B atau Phi-3 Mini) di laptop guru untuk fitur asisten konsultasi *Teacher's Copilot* luring.
+
+### 📱 Sprint 3: Gamification & Local Mesh Dashboard
+*Target: Melengkapi visualisasi frontend dan interaksi ramah anak.*
+
+*   **UI/UX Refinement:**
+    *   [ ] Rancang halaman `FE/pages/game.tsx` untuk sistem reward (poin, badge, streak) guna menstimulasi motivasi belajar anak disleksia.
+    *   [ ] Sempurnakan halaman `FE/pages/result.tsx` agar menampilkan grafik distribusi pola kesalahan secara intuitif (glassmorphic styling).
+
+### 🔌 Sprint 4: IoT Smart Writing Grip & Telemetry Integration (Fase Akhir)
+*Target: Integrasi siber-fisik telemetri sensor grip pensil setelah perangkat keras siap.*
+
+*   **Firmware & MQTT Broker Setup:**
+    *   [ ] Rancang firmware ESP32 untuk membaca data mentah 6-axis IMU MPU6050 (akselerasi dan rotasi).
+    *   [ ] Setup Mosquitto MQTT Broker lokal di laptop server guru untuk menangkap data stream sensor.
+    *   [ ] Buat handler MQTT asinkron di `BE/app/services/mqtt_handler.py`.
+*   **Bio-Kinesthetic Data Analysis:**
+    *   [ ] Selesaikan modul `BE/app/services/kinesthetic_analyzer.py` untuk ekstraksi fitur tremor kognitif, jeda penulisan (*hesitation*), dan pembalikan sapuan tangan (*stroke inversion*).
+    *   [ ] Integrasikan metrik kinematik ini ke dalam `scoring_service.py` untuk analisis risiko multivariat gabungan (Visual + Kinestetik).
 
 ---
 
-**Last Updated:** 24 Mei 2026
-**Version:** 1.0
-**Maintained By:** Product Team
+**Terakhir Diperbarui:** 1 Juni 2026  
+**Versi Dokumen:** 1.2 (Revisi Penjadwalan IoT Terakhir)  
+**Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)

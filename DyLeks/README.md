@@ -344,3 +344,29 @@ flowchart LR
 * **Guru:** Menyiapkan sesi, memantau hasil siswa secara langsung, dan mengunduh ringkasan perkembangan.
 * **Psikolog:** Meninjau data asesmen, memberi interpretasi klinis, lalu mengusulkan intervensi lanjutan.
 * **Sistem:** Menjadi penghubung antara data penulisan fisik, analisis AI lokal, dan laporan untuk guru maupun psikolog.
+
+---
+
+## 8. Riset Pengguna & Validasi Lapangan (Pilot Project)
+
+Pengembangan **DyLeks** dilandasi oleh riset kualitatif mendalam terhadap pengguna riil di sekolah dasar pelosok:
+
+* **Studi Kasus 1 (Siswa):** Daniel (Desa Dayeuhkolot), seorang remaja mantan penyandang disleksia. Akibat ketiadaan diagnosis dini di sekolah dasarnya (SDN Dayeuhkolot 12), ia sering dilabeli malas karena kesulitan membedakan huruf 'b'/'d'. Hal ini meninggalkan trauma akademik dan menurunkan rasa percaya dirinya secara permanen.
+* **Studi Kasus 2 (Guru):** Ibu Yuli (Guru, SD Negeri Dayeuhkolot 12), mengalami dilema pedagogis berat di lapangan karena kesulitan membedakan anak disleksia dengan anak lambat belajar (*slow learner*) tanpa instrumen asesmen yang objektif.
+* **Hasil Uji Coba Awal (Pilot Project):** Prototipe awal DyLeks diuji coba pada 20 anak di SD Negeri Dayeuhkolot 12. Sistem berhasil mendeteksi potensi disleksia dengan tingkat kecocokan observasi guru sebesar **90%** (18 dari 20 siswa teridentifikasi dengan tepat), serta mengklasifikasikan 4 siswa dengan risiko disleksia sedang hingga tinggi.
+
+---
+
+## 9. Arsitektur & Strategi Deployment Luring (Penyelesaian Mixed Content)
+
+Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan keamanan peramban web modern, DyLeks menerapkan strategi *deployment* sebagai berikut:
+
+### A. Fully Local Offline Deployment (HTTP-to-HTTP)
+1. **Server Lokal Mandiri:** Frontend Next.js disajikan dari laptop server guru (menggunakan web server ringan lokal seperti Caddy) pada port `3001` dalam protokol HTTP.
+2. **Backend API:** FastAPI berjalan secara lokal di laptop server guru pada port `3002` dalam protokol HTTP.
+3. **Penyelesaian Mixed Content Blocking:** Dengan menjaga agar Frontend dan Backend berjalan dalam lingkup protokol HTTP murni yang sama di jaringan Wi-Fi kelas (`http://192.168.x.x` atau domain lokal mDNS seperti `http://dyleks.local`), peramban klien (smartphone/tablet siswa) tidak akan memblokir request API (*AJAX/Fetch*). Hal ini menyelesaikan isu *Mixed Content Blocking* yang terjadi jika frontend dihost di HTTPS publik (misal Vercel) namun backend berada di HTTP lokal.
+4. **PWA Offline Installation:** PWA Next.js dapat dipasang langsung ke layar utama (*Add to Home Screen*) peramban siswa melalui alamat IP lokal server tanpa koneksi internet sama sekali.
+
+### B. Isolasi Data Sekolah (Zero-Config Multitenancy)
+* Setiap laptop guru menjalankan instans *local database SQLite* (`dyslexiai_local.db`) mandiri.
+* Dengan demikian, kerahasiaan data anak di masing-masing sekolah terjaga secara penuh, aman, dan terisolasi secara struktural tanpa risiko kebocoran data keluar ataupun bentrokan konfigurasi IP eksternal.

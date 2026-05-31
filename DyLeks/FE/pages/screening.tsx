@@ -55,7 +55,7 @@ export default function ScreeningPage() {
     const base64Image = canvas.toDataURL('image/jpeg', 0.8);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/v1/screening/upload', {
+      const response = await fetch('http://localhost:3002/api/v1/screening/upload', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

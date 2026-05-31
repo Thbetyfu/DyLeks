@@ -48,10 +48,18 @@ def preprocess_handwriting(image_bytes: bytes) -> bytes:
     # Gaussian blur untuk mengurangi noise tingkat piksel
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-    # OTSU Thresholding: secara otomatis menemukan nilai pisah terbaik
-    _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    # Gunakan Adaptive Thresholding Gaussian untuk menangani bayangan tidak merata pada kertas
+    # blockSize=11 dan C=2 adalah nilai standar yang andal untuk tulisan tangan pensil di kertas putih
+    thresh = cv2.adaptiveThreshold(
+        blurred, 
+        255, 
+        cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
+        cv2.THRESH_BINARY, 
+        11, 
+        2
+    )
 
-    # Convert kembali ke 3-channel agar LLaVA bisa membacanya sebagai gambar warna
+    # Convert kembali ke 3-channel agar model vision bisa membaca sebagai gambar warna
     result_img = cv2.cvtColor(thresh, cv2.COLOR_GRAY2BGR)
 
     # Encode ke JPEG bytes
