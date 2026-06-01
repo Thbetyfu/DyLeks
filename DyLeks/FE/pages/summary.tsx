@@ -1,97 +1,74 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
-import Head from 'next/head';
 import styles from '../styles/Summary.module.css';
+import Head from 'next/head';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme } from '../contexts/ThemeContext';
+import BatMascot from '../components/BatMascot';
+import ButterflyMascot from '../components/ButterflyMascot';
 
 export default function Summary() {
   const router = useRouter();
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
-  const [totalCount, setTotalCount] = useState(5);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem('dyslexia_screening_results');
-    if (stored) {
-      try {
-        const pastResults = JSON.parse(stored);
-        setTotalCount(pastResults.length);
-        
-        // Menghitung jumlah kata yang risiko-nya rendah (skor <= 40)
-        const correct = pastResults.filter((r: any) => r.result.risk_score <= 40).length;
-        setCorrectCount(correct);
-        
-        // Logika Rekomendasi Level
-        let recommendedLevel = 5; 
-        for (let i = 0; i < pastResults.length; i++) {
-          if (pastResults[i].result.risk_score > 40) {
-            recommendedLevel = i + 1;
-            break;
-          }
-        }
+    setMounted(true);
+    
+    const exerciseData = sessionStorage.getItem('exercise_analytics');
+    const screeningData = sessionStorage.getItem('dyslexia_screening_results');
 
-        const avgScore = pastResults.reduce((acc: number, val: any) => acc + val.result.risk_score, 0) / pastResults.length;
-        const allErrors = pastResults.flatMap((r: any) => r.result.detected_errors);
-        
-        let label = "Rendah";
-        let msg = "";
-
-        if (recommendedLevel === 1) {
-          label = "Tinggi";
-          msg = "Kami merekomendasikan mulai dari Level 1 untuk memperkuat fondasi.";
-        } else if (recommendedLevel === 2) {
-          label = "Sedang";
-          msg = "Mari asah kemampuan di Level 2 untuk pengenalan suku kata.";
-        } else if (recommendedLevel === 3) {
-          label = "Sedang";
-          msg = "Kerja bagus! Mari kita perkuat pemahaman di Level 3.";
-        } else if (recommendedLevel === 4) {
-          label = "Rendah";
-          msg = "Hampir sempurna! Ayo coba tantangan di Level 4.";
-        } else {
-          label = "Rendah";
-          msg = "Luar biasa! Kamu siap untuk petualangan di Level 5.";
-        }
-
-        const consolidated = {
-           status: "success",
-           risk_score: avgScore,
-           risk_level: label,
-           recommended_level: recommendedLevel,
-           feedback: msg,
-           detected_errors: allErrors
-        };
-
-        // Simpan hasil akhir yang sudah dikonsolidasikan
-        sessionStorage.setItem('dyslexia_result', JSON.stringify(consolidated));
-
-      } catch (e) {
-        console.error("Summary Processing Error:", e);
-      }
+    if (exerciseData) {
+      const parsed = JSON.parse(exerciseData);
+      setTotalCount(parsed.length);
+      setCorrectCount(parsed.filter((p: any) => p.isCorrect).length);
+    } else if (screeningData) {
+      const parsed = JSON.parse(screeningData);
+      setTotalCount(parsed.length);
+      setCorrectCount(parsed.filter((p: any) => p.result.risk_score <= 40).length);
     }
   }, []);
 
-  const handleNext = () => {
-    router.push('/result');
-  };
+  if (!mounted) return null;
 
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Selesai Screening - ARCANA</title>
-      </Head>
+    <>
+      <div className="background-container">
+        <div className="star" style={{ top: '15%', left: '25%', animationDelay: '0s' }}></div>
+        <div className="star" style={{ top: '65%', left: '75%', animationDelay: '1s' }}></div>
+        <div className="star" style={{ top: '35%', left: '55%', animationDelay: '2s' }}></div>
+      </div>
 
-      <h1 className={styles.headline}>Kamu benar {correctCount} dari {totalCount} kata</h1>
-      
-      <div className={styles.mascotContainer}>
-        <img src="/assets/duck.svg" alt="Duck Mascot" className={styles.duck} />
+      <div className={styles.container}>
+        <Head>
+          <title>Selesai Screening - DyLeks</title>
+        </Head>
+
+        <ThemeToggle />
+
+        <h1 className={styles.headline}>
+          Kamu hebat sekali!
+        </h1>
+        <p className={styles.subheadline}>
+          Tepat {correctCount} dari {totalCount} kata
+        </p>
+
+        <div className={styles.mascotContainer}>
+          {theme === 'dark' ? <BatMascot className={styles.duck} /> : <ButterflyMascot className={styles.duck} />}
+        </div>
+
+        <p className={styles.subheadline}>
+          Kita lihat hasil latihan yang cocok untukmu ya!
+        </p>
+
+        <div className={styles.footer}>
+          <button className={styles.button} onClick={() => router.push('/result')}>
+            Lihat Hasil
+          </button>
+        </div>
       </div>
-      
-      <h2 className={styles.subheadline}>Kita lihat hasil latihan yang cocok untukmu ya!</h2>
-      
-      <div className={styles.footer}>
-        <button className={styles.button} onClick={handleNext}>
-          Lihat Hasil
-        </button>
-      </div>
-    </div>
+    </>
   );
 }

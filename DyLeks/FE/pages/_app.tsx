@@ -1,6 +1,7 @@
 import type { AppProps } from 'next/app';
 import { Poppins } from 'next/font/google';
 import '../styles/globals.css';
+import { ThemeProvider } from '../contexts/ThemeContext';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -10,8 +11,10 @@ const poppins = Poppins({
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <main className={poppins.className}>
-      <Component {...pageProps} />
-    </main>
+    <ThemeProvider>
+      <main className={poppins.className}>
+        <Component {...pageProps} />
+      </main>
+    </ThemeProvider>
   );
 }

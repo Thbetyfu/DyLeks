@@ -5,11 +5,63 @@
   font-style: normal;
 }
 
+:root {
+  /* LIGHT MODE (BUTTERFLY) */
+  --bg-color: #FFF0F5; /* Soft Pink / Lavender blush */
+  --text-main: #333333;
+  --text-muted: #666666;
+  
+  --primary: #87CEEB; /* Sky Blue */
+  --accent: #FF69B4; /* Hot Pink */
+  --highlight: #FFD700; /* Sunshine Yellow */
+  /* Glassmorphism Tokens */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 105, 180, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+  --bg-gradient: radial-gradient(circle at 50% 50%, #FFF0F5 0%, #FFB6C1 100%);
+  --star-color: #FF69B4;
+  
+  /* ui-designer Extra Tokens */
+  --color-success: hsl(150, 45%, 40%);
+  --color-warning: hsl(35, 85%, 50%);
+  --color-danger: hsl(5, 75%, 60%);
+  --radius-lg: 16px;
+  --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+[data-theme='dark'] {
+  /* DARK MODE (BAT) */
+  --bg-color: #0A0A1F;
+  --text-main: #FFFFFF;
+  --text-muted: #A0A5CE;
+  
+  --primary: #1A1B41; /* Midnight Blue */
+  --accent: #623CEA; /* Deep Violet */
+  --highlight: #00F0FF; /* Neon Cyan */
+  
+  /* Glassmorphism Tokens */
+  --glass-bg: rgba(26, 27, 65, 0.65);
+  --glass-border: rgba(0, 240, 255, 0.15);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  --bg-gradient: radial-gradient(circle at 50% 50%, #11122a 0%, #0A0A1F 100%);
+  --star-color: #00F0FF;
+
+  /* ui-designer Extra Tokens */
+  --color-success: hsl(150, 55%, 35%);
+  --color-warning: hsl(35, 95%, 45%);
+  --color-danger: hsl(5, 85%, 55%);
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   padding: 0;
-  background: #ffffff;
-  color: #333333;
+  background-color: var(--bg-color);
+  color: var(--text-main);
+  transition: background-color 0.5s ease, color 0.5s ease;
 }
 
 h1, h2, h3, h4, h5, h6, p, span, button {
@@ -22,4 +74,35 @@ nextjs-portal,
   display: none !important;
   visibility: hidden !important;
   pointer-events: none !important;
+}
+
+/* Background Stars Animation */
+.background-container {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  z-index: -1;
+  background: var(--bg-gradient);
+  overflow: hidden;
+  transition: background 0.5s ease;
+}
+
+.star {
+  position: absolute;
+  width: 3px; height: 3px;
+  background: var(--star-color);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--star-color);
+  animation: twinkle 3s infinite alternate;
+  transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+@keyframes twinkle {
+  0% { opacity: 0.2; transform: scale(0.5); }
+  100% { opacity: 1; transform: scale(1.5); }
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
 }

@@ -3,6 +3,10 @@ import screeningStyles from '../styles/Screening.module.css';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styles from '../styles/Latihan.module.css';
+import { useTheme } from '../contexts/ThemeContext';
+import BatMascot from '../components/BatMascot';
+import ButterflyMascot from '../components/ButterflyMascot';
+import ThemeToggle from '../components/ThemeToggle';
 
 
 const GlowingStar = () => (
@@ -54,6 +58,7 @@ export default function Latihan() {
   const [hiddenOptions, setHiddenOptions] = useState<string[]>([]);
   const [streak, setStreak] = useState(0);
   const totalQuestions = 10;
+  const { theme } = useTheme();
 
   useEffect(() => {
     setMounted(true);
@@ -358,11 +363,17 @@ export default function Latihan() {
 
   if (view === 'completion') {
     return (
-      <div className={styles.container} style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '40px' }}>
-        <Head>
-          <title>Selesai - Arcana</title>
-        </Head>
-        <img src="/assets/duck.svg" alt="Duck" style={{ width: '120px', marginBottom: '24px' }} />
+      <div className={styles.container}>
+        <div className={styles.centeredWrapper} style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '40px' }}>
+          <Head>
+            <title>Selesai - Arcana</title>
+          </Head>
+          <div className={styles.themeToggleWrapper}>
+            <ThemeToggle />
+          </div>
+          <div style={{ width: '120px', marginBottom: '24px' }}>
+            {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
+          </div>
         <h1 className={styles.quizTitle} style={{ fontSize: '32px', marginBottom: '16px' }}>Horee! Selesai!</h1>
         <p className={styles.feedbackText} style={{ fontSize: '24px', color: '#58CC02', fontWeight: 'bold', marginBottom: '8px' }}>
           Skor: {correctCount} / {totalQuestions}
@@ -385,6 +396,7 @@ export default function Latihan() {
         }}>
           Kembali ke Dashboard
         </button>
+        </div>
       </div>
     );
   }
@@ -392,11 +404,15 @@ export default function Latihan() {
   if (view === 'learning') {
     return (
       <div className={styles.container}>
-        <Head>
-          <title>Belajar - Arcana</title>
-        </Head>
+        <div className={styles.centeredWrapper}>
+          <Head>
+            <title>Belajar - Arcana</title>
+          </Head>
+          <div className={styles.themeToggleWrapper}>
+            <ThemeToggle />
+          </div>
 
-        <div className={styles.quizContainer}>
+          <div className={styles.quizContainer}>
           <div className={styles.quizHeader}>
             <div className={styles.levelTextQuiz}>
               <GlowingStar />
@@ -443,6 +459,7 @@ export default function Latihan() {
             <button className={styles.nextButtonPurple} onClick={handleStartQuiz}>
               Berikutnya
             </button>
+            </div>
           </div>
         </div>
       </div>
@@ -452,11 +469,15 @@ export default function Latihan() {
   if (view === 'quiz') {
     return (
       <div className={styles.container}>
-        <Head>
-          <title>Latihan Quiz - Arcana</title>
-        </Head>
+        <div className={styles.centeredWrapper}>
+          <Head>
+            <title>Latihan Quiz - Arcana</title>
+          </Head>
+          <div className={styles.themeToggleWrapper}>
+            <ThemeToggle />
+          </div>
 
-        <div className={styles.quizContainer}>
+          <div className={styles.quizContainer}>
           <div className={styles.quizHeader}>
             <div className={styles.levelTextQuiz}>
               <GlowingStar />
@@ -530,40 +551,46 @@ export default function Latihan() {
                 </button>
               )}
             </div>
-          )}
+            )}
+          </div>
         </div>
-
-
       </div>
     );
   }
 
   if (view === 'writing') {
     return (
-      <div className={screeningStyles.container}>
-        <Head>
-          <title>Latihan Menulis - Arcana</title>
-        </Head>
+      <div className={styles.container}>
+        <div className={styles.centeredWrapper}>
+          <div className={screeningStyles.container}>
+            <Head>
+              <title>Latihan Menulis - Arcana</title>
+            </Head>
+            <div className={styles.themeToggleWrapper}>
+              <ThemeToggle />
+            </div>
 
-        <div className={screeningStyles.header}>
-          <p className={screeningStyles.headerTitle} style={{ color: '#333333' }}>
-            Latihan Menulis Vokal ({currentQuestionCount}/{totalQuestions})
-          </p>
-          <div className={screeningStyles.progressBar}>
-            <div className={screeningStyles.progress} style={{ width: `${(currentQuestionCount / totalQuestions) * 100}%` }}></div>
-          </div>
-        </div>
+            <div className={screeningStyles.header}>
+              <p className={screeningStyles.headerTitle} style={{ color: 'var(--text-main, #333)' }}>
+                Latihan Menulis Vokal ({currentQuestionCount}/{totalQuestions})
+              </p>
+              <div className={screeningStyles.progressBar}>
+                <div className={screeningStyles.progress} style={{ width: `${(currentQuestionCount / totalQuestions) * 100}%` }}></div>
+              </div>
+            </div>
 
-        <div className={screeningStyles.content}>
-          <div className={screeningStyles.row}>
-            <img src="/assets/duck.svg" alt="Duck" className={screeningStyles.duck} />
-            <h1 className={screeningStyles.title}>
-              {writingMode === 'listening'
-                ? 'Dengarkan lalu tulis di kertas'
-                : 'Ambil foto tulisanmu'}
-            </h1>
-          </div>
-        </div>
+            <div className={screeningStyles.content}>
+              <div className={screeningStyles.row}>
+                <div className={screeningStyles.duck}>
+                  {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
+                </div>
+                <h1 className={screeningStyles.title}>
+                  {writingMode === 'listening'
+                    ? 'Dengarkan lalu tulis di kertas'
+                    : 'Ambil foto tulisanmu'}
+                </h1>
+              </div>
+            </div>
 
         {writingMode === 'listening' ? (
           <>
@@ -635,7 +662,9 @@ export default function Latihan() {
               Berikutnya
             </button>
           </div>
-        )}
+            )}
+          </div>
+        </div>
       </div>
     );
   }
@@ -644,17 +673,23 @@ export default function Latihan() {
 
   return (
     <div className={styles.container}>
-      <Head>
-        <title>Latihan - Arcana</title>
-      </Head>
+      <div className={styles.centeredWrapper}>
+        <Head>
+          <title>Latihan - Arcana</title>
+        </Head>
+        <div className={styles.themeToggleWrapper}>
+          <ThemeToggle />
+        </div>
 
-      <div className={styles.topSection}>
-        <div style={{ height: '30px' }}></div>
-        <div className={styles.header}>
-          <div className={styles.avatar}>
-            <img src="/assets/duck.svg" alt="User Avatar" className={styles.avatarImg} />
-          </div>
-          <div className={styles.greetingInfo}>
+        <div className={styles.topSection}>
+          <div style={{ height: '30px' }}></div>
+          <div className={styles.header}>
+            <div className={styles.avatar}>
+              <div className={styles.mascotWrapper}>
+                {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
+              </div>
+            </div>
+            <div className={styles.greetingInfo}>
             <h1 className={styles.greetingTitle}>Hai!</h1>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
               <div className={styles.levelBadge}>
@@ -688,7 +723,9 @@ export default function Latihan() {
         </div>
 
         <div className={styles.tipCard}>
-          <img src="/assets/duck.svg" alt="Tip Mascot" className={styles.tipMascot} />
+          <div className={styles.tipMascot}>
+            {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
+          </div>
           <p className={styles.tipText}>
             Ingat: huruf <strong>b</strong> seperti bola di depan tongkat! Coba bayangkan tongkat lurus dulu, baru bola di kanan.
           </p>
@@ -712,7 +749,9 @@ export default function Latihan() {
             e.currentTarget.style.boxShadow = '0 8px 24px rgba(255, 82, 82, 0.15)';
           }}
         >
-          <img src="/assets/duck.svg" alt="Game Mascot" className={styles.tipMascot} />
+          <div className={styles.tipMascot}>
+            {theme === 'dark' ? <BatMascot /> : <ButterflyMascot />}
+          </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
             <p className={styles.tipText} style={{ fontSize: '18px', fontWeight: '800', color: '#ffffff' }}>
               Petualangan Huruf 🎮
@@ -735,6 +774,7 @@ export default function Latihan() {
           </div>
         </div>
       </div>
-    </div >
+    </div>
+  </div>
   );
 }

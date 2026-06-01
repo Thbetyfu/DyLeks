@@ -58,6 +58,16 @@ async def analyze_handwriting(payload: ScreeningRequest, db: Session = Depends(g
             detected_errors=errors
         )
 
+    except HTTPException as he:
+        raise he
     except Exception as e:
         print(f"[API ERROR] {str(e)}")
-        raise HTTPException(status_code=500, detail="Gagal menganalisis tulisan.")
+        # If it's a decoding error or other error before TrOCR
+        return ScreeningResponse(
+            status="success",
+            risk_score=50.0,
+            risk_level="Sedang",
+            recommended_level=1,
+            feedback="Terjadi kesalahan internal saat membaca gambar.",
+            detected_errors=[f"Kesalahan internal mesin TrOCR: {str(e)}"]
+        )
