@@ -6,8 +6,10 @@ import { useTheme } from '../contexts/ThemeContext';
 import BatMascot from '../components/BatMascot';
 import ButterflyMascot from '../components/ButterflyMascot';
 import ThemeToggle from '../components/ThemeToggle';
+import { SCREENING_WORDS } from '../lib/wordBank';
 
-const letters = ['A', 'BA', 'BAN', 'NYALA', 'MENEMANI'];
+const letters = SCREENING_WORDS;
+
 
 export default function ScreeningPage() {
   const router = useRouter();
@@ -121,6 +123,16 @@ export default function ScreeningPage() {
       } else {
         stopCamera();
         sessionStorage.setItem('dyslexia_screening_results', JSON.stringify(updatedResults));
+
+        // Simpan ringkasan hasil terakhir (dipakai latihan.tsx & Copilot)
+        const lastResult = data;
+        sessionStorage.setItem('dyslexia_result', JSON.stringify({
+          risk_score: lastResult.risk_score,
+          risk_level: lastResult.risk_level,
+          recommended_level: lastResult.recommended_level,
+          detected_errors: lastResult.detected_errors || [],
+        }));
+
         router.push('/summary');
       }
     } catch (error) {

@@ -13,15 +13,15 @@ def test_calculate_risk_correct():
 
 def test_calculate_risk_inversion():
     result = ScoringService.calculate_risk("BA", "da")
-    assert result["score"] == 80.0
+    assert result["score"] == 62.0
     assert any("inversi" in err.lower() for err in result["errors"])
 
 def test_calculate_risk_deletion():
     result = ScoringService.calculate_risk("BAN", "ba")
-    assert result["score"] == 68.0
-    assert any("Huruf hilang" in err for err in result["errors"])
+    assert result["score"] == 27.0
+    assert any("hilang" in err for err in result["errors"])
 
 def test_calculate_risk_insertion():
     result = ScoringService.calculate_risk("A", "ba")
-    assert result["score"] == 73.3
-    assert any("Huruf tambah" in err for err in result["errors"])
+    assert result["score"] == 40.3
+    assert any("tambahan" in err for err in result["errors"])

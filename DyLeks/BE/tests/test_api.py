@@ -27,7 +27,7 @@ def test_upload_screening_invalid_base64():
     # Test bagaimana backend merespon base64 yang bukan gambar (misal teks biasa)
     # Ini harus ditangani dan tidak membuat server crash
     response = client.post("/api/v1/screening/upload", json={
-        "image_base64": "data:image/jpeg;base64,invalid_string",
+        "image_base64": "data:image/jpeg;base64,aW52YWxpZF9pbWFnZV9ieXRlcw==",
         "target_letter": "A"
     })
     assert response.status_code == 200

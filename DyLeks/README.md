@@ -1,10 +1,13 @@
-<hr>
+---
 
 # DyLeks
 
 **Ekosistem Edge-AI Offline, PWA Responsif Multi-Device, dan Sensor Fusion IoT untuk Skrining Dini serta Pembelajaran Adaptif Multisensori bagi Anak Disleksia di Daerah 3T**
 
-<hr>
+> **Versi Dokumentasi:** 2.0 (Diperbarui 9 Juni 2026)
+> **Status Pengembangan:** Aktif — Fase 2 (Frontend & AI Services)
+
+---
 
 ## 1. Masalah: "The 3T Identification Vacuum" di Indonesia
 
@@ -25,209 +28,307 @@ Di daerah 3T, tantangannya berlipat ganda:
 **DyLeks** adalah platform hibrida (*Laptop-to-Mobile*) yang berjalan **100% secara lokal (OFFLINE)** memanfaatkan jaringan Wi-Fi lokal kelas (*Local Hotspot Setup*) tanpa kuota data:
 
 * **Laptop-as-a-Server Hub:** Laptop guru bertindak sebagai pangkalan data lokal (`dyslexiai_local.db`) dan mesin pemroses AI utama.
-* **Mobile-as-a-Client PWA:** Aplikasi *Front-End* dikemas sebagai *Progressive Web App* (PWA) yang dapat diakses dan diinstal langsung ke *smartphone* Android/iOS milik guru atau orang tua siswa via browser tanpa perlu akses ke Play Store/App Store.
+* **Mobile-as-a-Client PWA:** Aplikasi *Front-End* dikemas sebagai *Progressive Web App* (PWA) yang dapat diakses dan diinstall langsung ke *smartphone* Android/iOS milik guru atau orang tua siswa via browser tanpa perlu akses ke Play Store/App Store.
 * **Physical-to-Digital Pipeline:** Anak tetap menulis di atas kertas fisik menggunakan pensil untuk melatih motorik halus, lalu hasilnya difoto menggunakan kamera *smartphone* untuk dikirim ke *local server* laptop guna dianalisis.
-* **Bio-Kinesthetic Handwriting Tracking:** Anak tetap menulis secara natural di atas kertas fisik menggunakan pensil biasa yang dipasangi Smart Writing Grip. Sensor IMU pada grip menangkap mikro-gerakan (akselerasi dan rotasi) tangan anak saat membentuk huruf, sehingga sistem memperoleh dimensi data kinematik baru sebelum kertas difoto untuk proses OCR.
 * **Privacy-First Edge Computing:** Seluruh inferensi AI berjalan di sisi lokal perangkat, menjamin keamanan data tumbuh kembang anak-anak di pedalaman.
 
 ---
 
-## 3. Tech Stack & Engineering Excellence (Optimized for Low-Spec Devices)
+## 3. Tech Stack & Engineering Excellence
 
-Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat komputasi standar sekolah pelosok melalui kompresi model ke format **ONNX Runtime**:
+Sistem dioptimasi secara arsitektural agar mampu berjalan lancar pada perangkat komputasi standar sekolah pelosok:
 
-| Komponen                            | Teknologi                                     | Peran & Optimalisasi 3T                                                                                                                                      |
-| ----------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **Frontend Client**           | **Next.js 14 + PWA**                    | UI/UX responsif untuk Laptop & Mobile; performa rendering luring.                                                                                            |
-| **Backend Server**            | **FastAPI + MQTT Client**               | Mengelola REST API sekaligus menjadi subscriber pesan MQTT untuk menangkap data sensor dari grip secara asinkron.                                            |
-| **IoT Microcontroller**       | **ESP32 DevKit v1**                     | Menjadi otak pada grip pensil; membaca data sensorik mentah lokal dan mentransmisikannya via Wi-Fi lokal kelas.                                              |
-| **Hardware Sensor**           | **IMU MPU6050 (6-Axis)**                | Mengombinasikan 3-axis Accelerometer dan 3-axis Gyroscope untuk mendeteksi getaran, kecepatan, dan sudut kemiringan tarikan garis tangan anak.               |
-| **IoT Broker Protocol**       | **Eclipse Mosquitto (MQTT)**            | Message broker ringan yang di-host lokal di laptop guru untuk menjamin pengiriman data sensorik berlatensi rendah tanpa internet.                            |
-| **AI OCR Engine**             | **TrOCR + ONNX Web**                    | Model Vision-Transformer (Microsoft/trocr-base) yang dikompresi ke format ONNX agar inferensi tulisan tangan berjalan sangat ringan tanpa butuh GPU diskrit. |
-| **Fuzzy Matching**            | **RapidFuzz**                           | Algoritma pencocokan kata lokal dengan efisiensi tinggi untuk toleransi kesalahan ketik ringan pada Listen Card.                                             |
-| **Audio Scaffolding**         | **Python TTS Generator**                | Memproduksi petunjuk vokal luring (`gen_audio.py`) untuk memandu siswa pelosok dengan pendekatan multisensori.                                             |
-| **Local Database**            | **SQLite**                              | Menyimpan koordinat sensorik dan pola kinematik menulis anak bersama hasil akhir asesmen.                                                                    |
-| **Offline LLM Engine**        | **Ollama + Phi-3 / Qwen-1.5-B**         | Menjalankan Small Language Model (SLM) terkompresi secara lokal di laptop untuk mengotaki Teacher's Copilot tanpa internet.                                  |
-| **Kinesthetic Tracer Engine** | **Smart Writing Grip + MQTT Telemetry** | Menangkap data trajektori, tremor, dan hesitation saat anak menulis di kertas fisik.                                                                         |
+| Komponen | Teknologi | Peran & Status |
+| --- | --- | --- |
+| **Frontend Client** | **Next.js 16 + PWA (next-pwa)** | UI/UX responsif; Service Worker offline aktif |
+| **Backend Server** | **FastAPI (Python 3.9+)** | REST API berjalan di port 3002 |
+| **AI OCR Engine** | **TrOCR + ONNX Web** | Fallback offline jika Ollama tidak tersedia |
+| **Vision AI (Primary)** | **Ollama Vision (LLaVA/Phi-3)** | Engine utama analisis tulisan tangan, 100% offline |
+| **Fuzzy Matching** | **RapidFuzz 3.10** | Deteksi pola disleksia: reversal b/d, omission, insertion, transposition |
+| **Audio Scaffolding** | **Python gTTS + File MP3** | 5 file audio luring tersedia di `/public/assets/audio/` |
+| **Local Database** | **SQLite (via SQLAlchemy 2.0)** | Skema relasional: users, child_profiles, screening_sessions, exercises |
+| **Auth** | **Bcrypt + HMAC-SHA256 Token** | Isolasi data antar guru tanpa JWT overhead |
+| **Offline Sync** | **Service Worker + IndexedDB** | Background Sync untuk antrian submit foto saat koneksi terputus |
+| **IoT (Direncanakan)** | **ESP32 + MPU6050 + MQTT** | Smart Writing Grip — belum diimplementasikan |
 
 ---
 
-## 4. Fitur Utama & Muatan Kurikulum STEM
+## 4. Fitur yang Telah Diimplementasikan
 
 ### A. Progressive STEM-Infused Screening (5-Level Curriculum)
 
-Proses skrining tidak hanya menguji bahasa baku, melainkan menyuntikkan muatan literasi sains dan matematika dasar (STEM) untuk sekaligus mengakselerasi pengetahuan sains anak:
+Kurikulum 5 level berbasis Orton-Gillingham tersimpan sebagai *Single Source of Truth* di `FE/lib/wordBank.ts`:
 
-* **Level 1 (Huruf Tunggal):** Deteksi awal orientasi karakter visual (e.g., Mengenali simbol angka/huruf 'A').
-* **Level 2 (Suku Kata):** Menguji penggabungan konsonan-vokal bertema alam (e.g., 'BA' pada kata Batu).
-* **Level 3 (Suku Kata Kompleks):** Deteksi inversi dan omisi pada istilah sains dasar (e.g., 'BAN' pada kata Banjir).
-* **Level 4-5 (Kata & Morfologi STEM):** Analisis kelancaran penulisan kata utuh sains populer (e.g., 'NYALA' pada konsep api/energi, 'MENEMANI').
+| Level | Fokus | Contoh Kata |
+| --- | --- | --- |
+| 1 | Huruf Vokal Tunggal | A, I, U, E, O |
+| 2 | Suku Kata Dasar (KV) | BUKU, MAMA, BOLA |
+| 3 | Suku Kata Kompleks (KVK) | BAN, MOBIL, RUMAH |
+| 4 | Fonem Digraf & Diftong | PISANG, NYANYI, PANTAI |
+| 5 | Kata Morfologi STEM | MENULIS, ENERGI, MAGNET |
 
-### B. Interactive Listen Card (Aksen & Dialek Lokal)
+### B. Gamifikasi — "Cari Pasangan Kata" (`FE/pages/game.tsx`)
 
-Antarmuka "Dengarkan-Lalu-Tulis" yang dilengkapi dengan *audio scaffolding* lokal (`gen_audio.py`). Aplikasi memberikan jeda intuitif dan kartu berubah warna secara visual saat audio dimainkan untuk menjaga fokus anak disleksia yang mudah terdistraksi.
+* Game *memory card matching* berbasis level kurikulum.
+* Kartu menampilkan kata dari level aktif siswa dan membunyikan kata saat diklik (Text-to-Speech Bahasa Indonesia).
+* Sistem skor (poin per pasangan) dan jumlah langkah (efisiensi bermain).
+* Modal reward bintang emas saat semua pasangan ditemukan.
+* Tombol "Level Berikutnya" untuk progressi otomatis.
+* Streak harian disimpan ke `sessionStorage` dan terkoneksi ke halaman Latihan.
 
-### C. Comprehensive Local Summary & Risk Analytics
+### C. Adaptive Listen Card — Mode Latihan (`FE/pages/latihan.tsx`)
 
-* **Risk Score Analysis:** Memberikan klasifikasi tingkat risiko disleksia anak (Rendah, Sedang, Tinggi) berdasarkan akurasi segmentasi gambar tulisan tangan.
-* **Error Pattern Recognition:** Mendeteksi kesalahan khas disleksia seperti *reversal* (huruf tertukar/terbalik seperti b/d, p/q) atau *omission* (huruf yang hilang) secara otomatis menggunakan AI lokal.
-* **Learning Roadmaps:** Secara otomatis menyusun modul rekomendasi belajar adaptif intervensi mandiri bagi guru di pelosok berdasarkan *error pattern* anak.
+* Antarmuka "Dengar → Pilih/Tulis" multisensori.
+* Menggunakan `getRandomTarget()` dan `buildQuizOptions()` dari `wordBank.ts` sebagai data source tunggal (tidak ada duplikasi data).
+* Quiz pilihan ganda adaptif + 2 soal terakhir (dari 10) berbasis kamera.
+* Sistem eliminasi opsi salah setelah 3x percobaan gagal.
+* Progress sesi dan streak tersimpan di `sessionStorage`.
 
-### D. Mode Belajar Adaptif Berbasis Orton-Gillingham
+### D. Skrining Tulisan Tangan (`FE/pages/screening.tsx`)
 
-* Modul intervensi dinamis (`adaptive_engine.py`) yang melatih anak membaca menggunakan kombinasi tiga sensor: penglihatan (visual), pendengaran (auditori), dan gerakan tangan/sentuhan (kinestetik) secara berulang dan terstruktur.
-* **Dynamic Feedback:** Kesulitan kata akan meningkat atau menurun secara otomatis menyesuaikan kecepatan respons dan ketepatan anak saat menyelesaikan tantangan membaca offline.
+* Dual-Engine AI: Ollama Vision (primary) → TrOCR Transformer (fallback offline).
+* Capture foto via kamera smartphone, kirim ke backend `POST /api/v1/screening/upload`.
+* Output: skor risiko (0-100), label risiko, level rekomendasi, dan daftar pola kesalahan terdeteksi.
 
-### E. Orton-Gillingham Cumulative Review & Phonogram Matrix
+### E. Halaman Hasil & Analisis Pola (`FE/pages/result.tsx`)
 
-* **Cumulative Spaced-Repetition System:** `adaptive_engine.py` diperluas menjadi `Cumulative Drill Engine` sehingga saat anak masuk Level 3, sistem otomatis menyisipkan 15–20% soal dari Level 1 dan Level 2 secara acak agar pola huruf lama tetap terjaga di memori jangka panjang.
-* **Indonesian Phonogram Mapping Database:** Skema `dyslexiai_local.db` diperbarui dengan tabel `indonesian_phonogram_matrix` untuk menyimpan urutan fonem bahasa Indonesia dari yang paling mudah ke yang paling sulit.
-* **Cakupan Fonetik:** Digraf Melayu seperti `NG`, `NY`, `KH`, `SY`, serta diftong `AI`, `AU`, `OI` dilatih lewat modul audio dan penulisan sebelum anak naik ke teks morfologi sains yang lebih panjang.
-* **Nilai Juri SFT:** Menunjukkan bahwa DyLeks tidak hanya adaptif, tetapi juga mengikuti prinsip inti Orton-Gillingham yang sistematis, kumulatif, dan berbasis urutan fonetik.
+* Grafik SVG distribusi frekuensi pola kesalahan (Inversi b/d, Transposisi, Omission/Insertion, Inversi p/q).
+* Menampilkan detail per kata: benar/salah, error message dari backend.
+* Indikasi awal berdasarkan pola error dengan disclaimer klinis.
+* Rekomendasi tindak lanjut adaptif berdasarkan skor.
 
-### F. Teacher’s Offline AI Pedagogical Copilot (Asisten Konsultasi Guru Luring)
+### F. Teacher's Offline AI Copilot (`FE/pages/copilot.tsx`)
 
-* **Mekanisme AI:** Memanfaatkan modul `ollama_service.py` dan `chat.py` untuk menjalankan *Small Language Model* (SLM) yang telah dikompresi di dalam server laptop guru^^.
-* **Cara Kerja:** Karena di daerah 3T tidak ada psikolog atau pakar disleksia, guru sering kebingungan menghadapi anak yang memiliki pola kesalahan tertentu. Fitur ini menyediakan ruang *chatting* 100% offline^^. Guru bisa bertanya: *"Anak X di Level 3 sering membalik huruf b dan d, latihan taktil apa yang paling cocok untuk besok?"* AI lokal akan memberikan rekomendasi pedagogis berbasis metode Orton-Gillingham secara instan^^.
-* **Nilai Juri SFT:** Mengubah platform yang awalnya hanya "alat tes" menjadi **"asisten guru cerdas"** yang menyelesaikan kelangkaan tenaga ahli di pelosok.
-
-### G. Interactive Kinesthetic Tracer (Digital Whiteboard Stroke Analysis)
-
-* **Mekanisme STEM:** Memanfaatkan modul `digital_whiteboard.py` pada antarmuka *tablet* atau *smartphone*^^.
-* **Cara Kerja:** Anak disleksia tidak hanya kesulitan melihat huruf, tetapi juga bingung arah menulisnya (misal menulis huruf 'd' dimulai dari garis vertikal dulu atau lingkaran dulu). Lewat fitur papan tulis digital ini, anak diminta menebalkan huruf di layar menggunakan jari^^. AI tidak hanya menilai hasil akhir tulisan, tetapi juga menganalisis **arah tarikan garis (stroke direction)** secara  *real-time* . Jika arahnya salah, sistem akan memberikan *feedback* visual yang interaktif.
-* **Nilai Juri SFT:** Sangat menonjolkan pilar *Engineering* dan *Technology* dalam STEM.
-
-### H. Local Mesh Dashboard & Analytics (Pusat Kendali Kelas Inklusi)
-
-* **Mekanisme Sistem:** Sinkronisasi multi-device terenkripsi berbasis Wi-Fi lokal ke pangkalan data `dyslexiai_local.db`^^.
-* **Cara Kerja:** Menyediakan halaman dasbor khusus untuk guru di laptop server^^. Ketika 5 hingga 10 siswa sedang melakukan tes menggunakan HP Android secara serentak di kelas, guru dapat memantau progres, kecepatan respons, dan skor risiko masing-masing anak secara *live* dari satu layar laptop^^.
-* **Nilai Juri SFT:** Memperkuat kriteria Kelayakan Implementasi. Juri melihat bahwa sistem ini sangat efisien dan siap pakai untuk skala satu kelas di sekolah pedalaman.
-
-### I. IoT Bio-Kinesthetic Handwriting Analyzer (Smart Writing Grip)
-
-* **Mekanisme Sistem:** Perangkat Smart Writing Grip menangkap data trajektori menulis anak langsung dari pensil fisik melalui protokol MQTT ke backend FastAPI^^.
-* **Fungsi AI Lokal:** Algoritma pattern recognition pada laptop server menganalisis proses kinematik penulisan^^.
-  * **Hesitation Detection:** Mengukur jeda waktu berhenti (ragu-ragu) anak saat menyambung suku kata^^.
-  * **Tremor Analysis:** Mendeteksi getaran tangan berlebih akibat kecemasan kognitif (*anxiety spike*)^^.
-  * **Inversion Stroke Detection:** Menganalisis apakah arah putaran tangan terbalik (misal membentuk perut huruf 'd' atau 'b' dari bawah ke atas) yang menjadi ciri khas disgrafia/disleksia^^.
-* **Nilai Juri SFT:** Menambahkan dimensi *sensor fusion* dan *embedded system* sehingga solusi lebih kuat secara engineering.
-
-### J. Gamification & Reward System (Motivasi Belajar Anak)
-
-* **Mekanisme Sistem:** Menambahkan elemen permainan edukatif untuk menjaga motivasi anak selama screening dan latihan mandiri^^.
-* **Cara Kerja:** Anak memperoleh poin, badge, bintang progres, dan tantangan harian setelah menyelesaikan latihan membaca, menulis, atau tracing^^. Sistem memberikan feedback visual dan audio yang positif agar anak tetap tertarik belajar tanpa merasa terbebani^^.
-* **Contoh Mode Game:** Matching huruf atau suku kata, tebak kata dari audio, trace-the-letter challenge, dan streak challenge harian^^.
-* **Nilai Juri SFT:** Menambah aspek *engagement* dan *usability* sehingga sistem tidak hanya fungsional, tetapi juga lebih menarik bagi anak disleksia.
-
-J. Gamification & Reward System (Motivasi Belajar Anak)
-
-### K. Visual Use Case Ringkas per Fitur
-
-| Fitur                    | Use Case Utama                                        | Output Visual                                      |
-| ------------------------ | ----------------------------------------------------- | -------------------------------------------------- |
-| Screening                | Guru memilih level, anak menulis, sistem memberi skor | Progress bar, skor risiko, hasil OCR               |
-| Listen Card              | Anak mendengar audio lalu menulis ulang               | Kartu audio, highlight warna, feedback benar/salah |
-| OG Cumulative Review     | Sistem menyisipkan materi lama saat level baru        | Matriks fonogram, jadwal review, indikator mastery |
-| IoT Handwriting Analyzer | Grip mengirim data tulisan ke server                  | Grafik tremor, hesitation, stroke pattern          |
-| Gamification             | Anak menyelesaikan misi dan mendapat reward           | Badge, bintang, poin, streak harian                |
+* Antarmuka chat 100% offline dengan model bahasa kecil (Ollama lokal).
+* Guru dapat bertanya rekomendasi intervensi berdasarkan pola error anak.
 
 ---
 
-## 5. Struktur Arsitektur Kode Utama
+## 5. Arsitektur Backend yang Telah Diimplementasikan
 
-Peta repositori aplikasi untuk memudahkan pembagian tugas tim pengembang:
+### Struktur Direktori Aktual
 
 ```text
 DyLeks/
-├── BE/                           # Python FastAPI Backend (Local Server Hub)
+├── BE/                                    # Python FastAPI Backend (port 3002)
 │   ├── app/
 │   │   ├── api/v1/
-│   │   │   ├── screening.py      # Endpoint manajemen sesi skrining anak
-│   │   │   ├── learning.py       # Endpoint mesin belajar adaptif
-│   │   │   └── chat.py           # Endpoint asisten panduan guru luring
+│   │   │   ├── auth.py                    # [BARU] Register, Login, CRUD ChildProfile
+│   │   │   ├── screening.py               # Endpoint analisis tulisan tangan (Dual-Engine)
+│   │   │   ├── learning.py                # Endpoint mesin belajar adaptif
+│   │   │   └── chat.py                    # Endpoint AI Copilot guru luring
 │   │   ├── services/
-│   │   │   ├── mqtt_handler.py   # Mengelola komunikasi data MQTT dari ESP32
-│   │   │   ├── kinesthetic_analyzer.py # Ekstraksi fitur tremor & kecepatan menulis
-│   │   │   ├── adaptive_engine.py# Otak algoritma personalisasi tingkat kesulitan
-│   │   │   ├── image_processor.py# Pipeline prapemrosesan gambar tulisan tangan
-│   │   │   ├── trocr_service.py  # Model Vision-Transformer berbasis ONNX Runtime
-│   │   │   └── ocr_service.py    # Abstraksi utilitas OCR teks luring
-│   │   ├── models/               # ORM Skema SQLite (user, child_profile, session)
-│   │   ├── schemas/              # Pydantic data validation schemas
-│   ├── gen_audio.py              # Skrip generator audio instruksi multisensori
-│   ├── requirements.txt          # Dependensi Python backend (tambahkan paho-mqtt)
+│   │   │   ├── auth_service.py            # [BARU] Bcrypt hashing + HMAC session token
+│   │   │   ├── fuzzy_matching.py          # [BARU] DyslexiaFuzzyMatcher engine
+│   │   │   ├── scoring_service.py         # [DIPERBARUI] Wrapper ke DyslexiaFuzzyMatcher
+│   │   │   ├── adaptive_engine.py         # Spaced Repetition + Orton-Gillingham logic
+│   │   │   ├── image_processor.py         # Preprocessing gambar: deskew, OTSU, resize
+│   │   │   ├── ollama_service.py          # Chat copilot via Ollama lokal
+│   │   │   ├── ollama_vision_service.py   # Analisis gambar via Ollama Vision (LLaVA)
+│   │   │   ├── trocr_service.py           # ONNX Runtime fallback OCR
+│   │   │   └── ocr_service.py            # Abstraksi utilitas OCR
+│   │   ├── models/
+│   │   │   ├── user.py                    # [DIPERBARUI] Model User (Guru) SQLAlchemy lengkap
+│   │   │   ├── child_profile.py           # [DIPERBARUI] ChildProfile + teacher_id FK + gender/grade
+│   │   │   ├── screening_session.py       # Sesi skrining dengan FK ke child_profiles
+│   │   │   └── exercise.py                # Bank soal, LearningSession, ExerciseResponse
+│   │   ├── schemas/
+│   │   │   ├── user_schema.py             # [DIPERBARUI] Pydantic: UserCreate/Login/Response + ChildProfile
+│   │   │   ├── screening_schema.py        # ScreeningRequest + ScreeningResponse
+│   │   │   ├── exercise_schema.py         # Schema latihan
+│   │   │   └── chat_schema.py             # Schema AI chat
+│   │   └── core/
+│   │       └── database.py                # SQLAlchemy engine (SQLite offline)
+│   ├── gen_audio.py                       # Generator file MP3 luring via gTTS
+│   ├── requirements.txt                   # Dependensi Python (termasuk rapidfuzz, bcrypt)
 │   └── wsgi.py
 │
-├── FE/                           # Next.js Frontend (Multi-Device PWA Client)
+├── FE/                                    # Next.js 16 Frontend (port 3001)
 │   ├── pages/
-│   │   ├── index.tsx             # Halaman utama dasbor DyLeks
-│   │   ├── screening.tsx         # Antarmuka ambil foto tulisan & tes anak
-│   │   ├── latihan.tsx           # Antarmuka Listen Card mode multisensori
-│   │   ├── game.tsx              # Antarmuka gamifikasi dan reward system
-│   │   └── summary.tsx           # Visualisasi pola kesalahan dan rekomendasi guru
-│   ├── public/assets/audio/      # File audio instruksi (instruksi_ba.mp3, dsb)
-│   ├── styles/                   # Glassmorphic UI/UX styling ramah anak disleksia
-│   └── package.json
-
-├── IoT_Firmware/                 # Embedded System Code (C++/Arduino)
-│   └── smart_grip_esp32/
-│       ├── smart_grip_esp32.ino  # Skrip utama pembacaan MPU6050 & Wi-Fi Client MQTT
-│       └── config.h              # Konfigurasi IP lokal server Laptop Guru
+│   │   ├── _app.tsx                       # Entry point: ThemeProvider + Poppins font
+│   │   ├── index.tsx                      # Dashboard utama DyLeks
+│   │   ├── screening.tsx                  # Ambil foto tulisan & Dual-Engine AI
+│   │   ├── latihan.tsx                    # Adaptive Listen Card + Quiz + Writing
+│   │   ├── game.tsx                       # Memory Card Matching per level
+│   │   ├── result.tsx                     # Visualisasi pola kesalahan + rekomendasi
+│   │   ├── summary.tsx                    # Ringkasan sesi
+│   │   └── copilot.tsx                    # AI Teacher Copilot Chat
+│   ├── components/
+│   │   ├── BatMascot.tsx                  # Maskot kelelawar (dark mode)
+│   │   ├── ButterflyMascot.tsx            # Maskot kupu-kupu (light mode)
+│   │   └── ThemeToggle.tsx                # Toggle dark/light mode
+│   ├── lib/
+│   │   └── wordBank.ts                    # [KUNCI] Single Source of Truth kurikulum 5-level
+│   ├── styles/                            # CSS Modules per halaman + globals.css
+│   ├── public/
+│   │   ├── manifest.json                  # [BARU] PWA manifest (install prompt)
+│   │   ├── sw.js                          # [BARU] Custom Service Worker (4 strategi cache)
+│   │   └── assets/
+│   │       ├── audio/                     # 5 file MP3 luring (A, BA, BAN, NYALA, MENEMANI)
+│   │       ├── fonts/
+│   │       └── *.svg                      # Ikon dan maskot
+│   ├── contexts/
+│   │   └── ThemeContext.tsx               # React Context dark/light mode
+│   ├── next.config.js                     # Konfigurasi Next.js (next-pwa aktif)
+│   └── package.json                       # next-pwa + dependencies
 │
-└── ML_Pipeline/                  # Repositori Pelatihan & Kompresi Model AI
-    ├── notebooks/                # Eksplorasi Data Analisis (EDA) tulisan tangan anak
+└── ML_Pipeline/                           # Pipeline Pelatihan & Kompresi Model AI
+    ├── notebooks/                         # EDA dan eksplorasi data
     └── src/
-        ├── train.py              # Finetuning model TrOCR dengan dataset lokal
-        └── export_onnx.py        # Skrip konversi model PyTorch ke format ringan (.onnx)
-
+        ├── train.py                       # Fine-tuning TrOCR
+        └── export_onnx.py                 # Konversi PyTorch → ONNX
 ```
 
 ---
 
-## 6. Langkah Memulai Pengembangan (Local Development Guide)
+## 6. Skema Database (SQLite Lokal)
 
-### Prasyarat Infrastruktur Kelas 3T (Simulasi):
+Skema didesain dengan prinsip **Privacy-First**: data siswa terisolasi per guru secara struktural di level database, bukan hanya di level aplikasi.
+
+```
+users (Guru)
+├── id (PK, UUID)
+├── full_name, username, hashed_password (bcrypt)
+├── school_name, school_region
+├── is_active, created_at, last_login
+└── → child_profiles (One-to-Many, cascade delete)
+
+child_profiles (Siswa)
+├── id (PK, UUID)
+├── teacher_id (FK → users.id, CASCADE)  ← [KUNCI privasi]
+├── name, age, gender, grade
+├── current_level (1-5), risk_score, risk_level
+├── teacher_notes
+└── → screening_sessions, learning_sessions
+
+screening_sessions
+├── id (PK, UUID)
+├── child_id (FK → child_profiles.id)
+├── risk_score, risk_level, recommended_level
+└── feedback, created_at
+
+exercises (Bank Soal)
+├── id, level (1-5), type, content (JSON)
+└── correct_answer
+
+learning_sessions & exercise_responses
+└── Tracking respons anak per soal per sesi
+```
+
+---
+
+## 7. API Endpoints (Backend v1.2.0)
+
+### Auth & User Management (`/api/v1/auth`)
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/register` | Daftarkan guru baru ke server lokal |
+| POST | `/login` | Login guru, kembalikan HMAC session token |
+| POST | `/children` | Tambah profil siswa (butuh auth) |
+| GET | `/children` | Daftar semua siswa milik guru login |
+| GET | `/children/{id}` | Detail profil satu siswa |
+| PATCH | `/children/{id}` | Perbarui profil siswa |
+| DELETE | `/children/{id}` | Hapus siswa + cascade data sesi |
+
+### Screening (`/api/v1/screening`)
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/upload` | Analisis foto tulisan tangan (Dual-Engine) |
+
+### Learning (`/api/v1/learning`)
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| GET | `/questions` | Ambil soal adaptif (Spaced Repetition) |
+
+### AI Copilot (`/api/v1/chat`)
+| Method | Endpoint | Fungsi |
+|---|---|---|
+| POST | `/` | Chat dengan Ollama SLM lokal |
+
+---
+
+## 8. DyslexiaFuzzyMatcher Engine
+
+Modul `BE/app/services/fuzzy_matching.py` adalah jantung pedagogis DyLeks. Berbeda dari OCR biasa yang hanya membaca "apa yang tertulis", mesin ini mendeteksi **mengapa tulisan itu salah secara klinis**:
+
+| Tipe Error | Contoh | Mekanisme Deteksi |
+|---|---|---|
+| **Reversal b/d** | "buku" → "duku" | Bobot klinis 1.8x, deteksi posisi per karakter |
+| **Reversal p/q** | "pagi" → "qagi" | Bobot klinis 1.8x |
+| **Transposition** | "batu" → "tabu" | Anagram check (sorted chars match) |
+| **Omission** | "bango" → "bao" | Panjang token fonetik berkurang |
+| **Insertion** | "buku" → "bukuu" | Panjang token fonetik bertambah |
+
+**Fitur khusus Bahasa Indonesia:**
+- Digraf (NG, NY, KH, SY) diperlakukan sebagai satu unit fonetik.
+- Diftong (AI, AU, OI) dikenali saat tokenisasi.
+
+**Output batch session:** Frekuensi error, dominant error type, skor risiko agregat, dan rekomendasi intervensi Orton-Gillingham yang spesifik per pola error.
+
+---
+
+## 9. Protokol Offline-First (PWA)
+
+DyLeks menggunakan 4 strategi cache berbeda di Service Worker (`FE/public/sw.js`):
+
+| Strategi | Diterapkan pada | Alasan |
+|---|---|---|
+| **Cache-First** | Audio MP3, SVG, Font, Ikon | Aset statis tidak pernah berubah saat runtime |
+| **Stale-While-Revalidate** | JS/CSS chunk Next.js | Tampilkan cepat dari cache, update di background |
+| **Network-First** | Halaman HTML (navigate) | Prioritas data segar jika ada koneksi |
+| **IndexedDB Queue** | Submit foto tulisan tangan | Antrian Background Sync saat koneksi terputus |
+
+**Pre-cache saat install (Service Worker):**
+- Semua 8 halaman utama (`/`, `/screening`, `/latihan`, `/game`, `/result`, `/summary`, `/copilot`)
+- Semua 5 file audio luring
+- `manifest.json` dan aset SVG
+
+**Halaman offline fallback:** Jika cache miss dan network mati, browser menampilkan halaman custom berdesain gelap dengan petunjuk koneksi ke Wi-Fi guru — bukan halaman error bawaan browser.
+
+---
+
+## 10. Langkah Memulai Pengembangan (Local Development Guide)
+
+### Prasyarat Infrastruktur Kelas 3T (Simulasi)
 
 1. Sediakan satu router Wi-Fi tanpa internet (atau aktifkan fitur *Tethering/Hotspot* dari *smartphone*).
 2. Hubungkan Laptop (Server) dan *smartphone* (Client) ke jaringan Wi-Fi yang sama.
 
-### Langkah Menjalankan Server Utama (Laptop Guru):
-
-1. Masuk ke direktori backend: `cd BE`
-2. Instal pustaka pendukung: `pip install -r requirements.txt`
-3. Jalankan server FastAPI dengan mengekspos IP lokal jaringan:
+### Menjalankan Backend (Laptop Guru — Terminal A)
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-### Tambahan untuk Fitur Teacher's Copilot (Ollama Setup):
+cd BE
+pip install -r requirements.txt
+uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
+```
 
-1. Unduh dan instal Ollama di perangkat server (Laptop).
-2. Jalankan model bahasa super ringan (SLM) yang dioptimasi untuk spesifikasi rendah:
-   > ollama run qwen1.5:1.8b  (atau menggunakan phi3:mini)
-   >
-3. Pastikan konfigurasi URL Ollama pada `BE/app/core/config.py` sudah mengarah ke instans lokal tersebut.
+Backend API tersedia di `http://localhost:3002` dan `http://[IP-LOKAL-LAPTOP]:3002`.
 
-### IoT Hardware Setup (Simulasi Kelas 3T):
+### Setup Teacher's Copilot (Opsional — Ollama)
 
-1. Pastikan Laptop Server sudah menginstal Eclipse Mosquitto MQTT Broker dan berjalan secara lokal.
-2. Buka berkas `IoT_Firmware/smart_grip_esp32/config.h`, masukkan SSID Wi-Fi Hotspot lokal kelas dan IP Lokal Laptop Server.
-3. Flash program `smart_grip_esp32.ino` ke perangkat menggunakan Arduino IDE atau PlatformIO.
-4. Nyalakan Grip Pensil, perangkat akan otomatis terhubung ke router kelas dan mulai melakukan streaming data sensor saat pensil digerakkan.
+```bash
+# Install Ollama terlebih dahulu dari https://ollama.ai
+ollama run qwen1.5:1.8b
+# atau: ollama run phi3:mini
+```
 
-   *(Catatan: Penggunaan `--host 0.0.0.0` wajib dilakukan agar server FastAPI dapat menerima koneksi dari HP pintar siswa yang terhubung dalam satu jaringan Wi-Fi lokal).*
+Pastikan URL Ollama di `BE/app/core/config.py` mengarah ke `http://localhost:11434`.
 
-### Langkah Menjalankan Aplikasi Klien (Mobile / Laptop Siswa):
-1. Masuk ke direktori frontend: `cd FE`[cite: 1]
-2. Instal dependensi node: `npm install`[cite: 1]
-3. Sesuaikan konfigurasi URL dasar API klien ke alamat IP lokal server Laptop Guru.
-4. Jalankan aplikasi web: `npm run dev`[cite: 1]
-5. Buka browser di ponsel pintar, ketik alamat IP lokal laptop server, klik *"Add to Home Screen"* untuk menginstalnya sebagai aplikasi PWA luring murni.
+### Menjalankan Frontend (Terminal B)
+
+```bash
+cd FE
+npm install
+npm run dev
+# Dev server berjalan di http://localhost:3001
+```
+
+Dari smartphone yang terhubung ke Wi-Fi yang sama, buka `http://[IP-LOKAL-LAPTOP]:3001`.
+Klik **"Add to Home Screen"** di browser untuk menginstall sebagai PWA offline.
 
 ---
 
-## 7. BAB Baru: Flowchart Diagram & Use Case Diagram
-
-### 7.1 Flowchart Diagram Alur Sistem
+## 11. Flowchart Diagram Alur Sistem
 
 ```mermaid
 flowchart TD
@@ -235,121 +336,27 @@ flowchart TD
     B --> C{"Aktivitas yang dipilih?"}
 
     C -->|Screening| D["Anak menulis di kertas fisik"]
-    D --> E["Smart Writing Grip menangkap data IMU"]
-    E --> F["ESP32 kirim data via MQTT ke laptop server"]
-    F --> G["FastAPI menerima data dan menyimpan ke SQLite"]
-    G --> H["OCR + Fuzzy Matching + Risk Scoring"]
-    H --> I["Hasil tampil di dashboard guru dan ringkasan anak"]
+    D --> E["Guru foto tulisan dengan HP"]
+    E --> F["Dual-Engine AI: Ollama Vision → TrOCR fallback"]
+    F --> G["DyslexiaFuzzyMatcher analisis pola error"]
+    G --> H["Hasil tampil: skor risiko, pola error, rekomendasi level"]
 
-    C -->|Latihan| J["Audio Listen Card diputar"]
-    J --> K["Anak menulis ulang jawaban"]
-    K --> L["Feedback visual dan level adaptif"]
-    L --> M["Adaptive Engine menyusun soal berikutnya"]
+    C -->|Latihan| J["Audio Listen Card diputar (MP3 luring)"]
+    J --> K["Anak pilih jawaban dari opsi / tulis di kertas"]
+    K --> L["Feedback visual + level adaptif"]
+    L --> M["Adaptive Engine susun soal berikutnya (Spaced Repetition)"]
 
-    C -->|Game| N["Anak menyelesaikan mini game"]
-    N --> O["Poin, badge, dan streak diperbarui"]
-    O --> P["Progress anak disimpan ke database lokal"]
+    C -->|Game| N["Memory Card Matching per level"]
+    N --> O["Poin, langkah, dan streak diperbarui"]
+    O --> P["Progress anak disimpan ke sessionStorage"]
 
-    H --> Q["Optional: Copilot guru memberi rekomendasi"]
-    Q --> I
+    H --> Q["Optional: Copilot guru beri rekomendasi OG offline"]
+    Q --> H
 ```
-
-### 7.2 Use Case Diagram UML Sistem DyLeks
-
-```mermaid
-graph LR
-    Siswa(("Siswa"))
-    Guru(("Guru"))
-    Psikolog(("Psikolog"))
-
-    subgraph App ["Aplikasi DyLeks"]
-        UC1["Screening tulis tangan"]
-        UC2["Listen Card"]
-        UC3["Gamifikasi belajar"]
-        UC4["Memulai sesi belajar"]
-        UC5["Memantau progres kelas"]
-        UC6["Meminta rekomendasi"]
-        UC7["Review hasil asesmen"]
-        UC8["Menilai kebutuhan intervensi"]
-        UC9["Menyusun rekomendasi tindak lanjut"]
-    end
-
-    Siswa --> UC1
-    Siswa --> UC2
-    Siswa --> UC3
-
-    Guru --> UC4
-    Guru --> UC5
-    Guru --> UC6
-
-    Psikolog --> UC7
-    Psikolog --> UC8
-    Psikolog --> UC9
-
-    UC1 -.->|data hasil| UC5
-    UC2 -.->|progres latihan| UC5
-    UC3 -.->|reward & streak| UC5
-    UC5 -.->|ringkasan asesmen| UC7
-    UC6 -.->|saran intervensi| UC9
-```
-
-### 7.3 Use Case Ringkas per Aktor
-
-* **Guru:** Memulai skrining, memantau progress kelas, melihat hasil risiko, dan meminta rekomendasi intervensi.
-* **Anak:** Menulis di kertas fisik, mengerjakan Listen Card, menyelesaikan mini game, dan menerima reward progres.
-* **Sistem Lokal:** Menerima data MQTT, menjalankan OCR, menghitung risiko, menyimpan histori, dan menampilkan visualisasi.
-
-### 7.4 Use Case Detail per Aktor
-
-| Aktor        | Use Case                           | Deskripsi Singkat                                                                                            |
-| ------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------ |
-| Siswa        | Screening tulis tangan             | Siswa menulis huruf atau kata di kertas fisik, lalu data diproses oleh sistem untuk OCR dan analisis risiko. |
-| Siswa        | Listen Card                        | Siswa mendengarkan audio dan menulis ulang jawaban secara mandiri.                                           |
-| Siswa        | Gamifikasi belajar                 | Siswa menyelesaikan tantangan kecil untuk mendapatkan poin, badge, dan streak.                               |
-| Guru         | Memulai sesi belajar               | Guru memilih level, jenis aktivitas, dan memulai screening atau latihan untuk siswa.                         |
-| Guru         | Memantau progres kelas             | Guru melihat status tiap siswa, hasil OCR, skor risiko, dan progres latihan dari dashboard.                  |
-| Guru         | Meminta rekomendasi                | Guru bertanya ke copilot lokal untuk strategi latihan, intervensi, dan follow-up pembelajaran.               |
-| Psikolog     | Review hasil asesmen               | Psikolog membuka ringkasan hasil skrining untuk melihat pola kesalahan, risiko, dan tren perkembangan.       |
-| Psikolog     | Menilai kebutuhan intervensi       | Psikolog memberi masukan apakah siswa perlu latihan tambahan, observasi lanjutan, atau rujukan.              |
-| Psikolog     | Menyusun rekomendasi tindak lanjut | Psikolog menyusun saran intervensi berbasis data untuk guru dan orang tua.                                   |
-| Sistem Lokal | Menyimpan dan menghitung data      | Sistem menerima data sensor, menghitung risiko, menyimpan histori, dan menampilkan output visual.            |
-
-### 7.5 Diagram Interaksi Penggunaan Aplikasi
-
-```mermaid
-flowchart LR
-    Student(("Siswa"))
-    Teacher(("Guru"))
-    Psychologist(("Psikolog"))
-    App[("Aplikasi DyLeks")]
-    Server[("FastAPI + SQLite + MQTT")]
-    Grip[("Smart Writing Grip")]
-
-    Student -->|"menulis & belajar"| App
-    Student -->|"mengikuti gamifikasi"| App
-    Teacher -->|"memulai sesi & memantau"| App
-    Teacher -->|"bertanya rekomendasi"| App
-    Psychologist -->|"melihat ringkasan asesmen"| App
-    Psychologist -->|"memberi evaluasi"| App
-
-    Grip -->|"kirim data IMU"| Server
-    App -->|"kirim request data"| Server
-    Server -->|"hasil OCR, skor risiko, histori"| App
-    App -->|"laporan visual"| Student
-    App -->|"dashboard kelas"| Teacher
-    App -->|"ringkasan klinis"| Psychologist
-```
-
-### 7.6 Alur Penggunaan Aplikasi Berdasarkan Peran
-
-* **Siswa:** Masuk ke mode screening, latihan, atau game, lalu menerima umpan balik visual dan audio.
-* **Guru:** Menyiapkan sesi, memantau hasil siswa secara langsung, dan mengunduh ringkasan perkembangan.
-* **Psikolog:** Meninjau data asesmen, memberi interpretasi klinis, lalu mengusulkan intervensi lanjutan.
-* **Sistem:** Menjadi penghubung antara data penulisan fisik, analisis AI lokal, dan laporan untuk guru maupun psikolog.
 
 ---
 
-## 8. Riset Pengguna & Validasi Lapangan (Pilot Project)
+## 12. Riset Pengguna & Validasi Lapangan (Pilot Project)
 
 Pengembangan **DyLeks** dilandasi oleh riset kualitatif mendalam terhadap pengguna riil di sekolah dasar pelosok:
 
@@ -359,18 +366,53 @@ Pengembangan **DyLeks** dilandasi oleh riset kualitatif mendalam terhadap penggu
 
 ---
 
-## 9. Arsitektur & Strategi Deployment Luring (Penyelesaian Mixed Content)
+## 13. Arsitektur Deployment Luring (Penyelesaian Mixed Content)
 
 Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan keamanan peramban web modern, DyLeks menerapkan strategi *deployment* sebagai berikut:
 
-### A. Fully Local Offline Deployment (HTTP-to-HTTP)
+### Fully Local Offline Deployment (HTTP-to-HTTP)
 
-1. **Server Lokal Mandiri:** Frontend Next.js disajikan dari laptop server guru (menggunakan web server ringan lokal seperti Caddy) pada port `3001` dalam protokol HTTP.
-2. **Backend API:** FastAPI berjalan secara lokal di laptop server guru pada port `3002` dalam protokol HTTP.
-3. **Penyelesaian Mixed Content Blocking:** Dengan menjaga agar Frontend dan Backend berjalan dalam lingkup protokol HTTP murni yang sama di jaringan Wi-Fi kelas (`http://192.168.x.x` atau domain lokal mDNS seperti `http://dyleks.local`), peramban klien (smartphone/tablet siswa) tidak akan memblokir request API (*AJAX/Fetch*). Hal ini menyelesaikan isu *Mixed Content Blocking* yang terjadi jika frontend dihost di HTTPS publik (misal Vercel) namun backend berada di HTTP lokal.
+1. **Frontend Next.js** berjalan di laptop server guru pada **port 3001** (HTTP).
+2. **Backend FastAPI** berjalan di laptop server guru pada **port 3002** (HTTP).
+3. **Penyelesaian Mixed Content Blocking:** Dengan menjaga agar Frontend dan Backend berjalan dalam protokol HTTP murni yang sama di jaringan Wi-Fi kelas (`http://192.168.x.x`), peramban klien tidak akan memblokir request API. Hal ini menyelesaikan isu *Mixed Content Blocking* yang terjadi jika frontend dihost di HTTPS publik.
 4. **PWA Offline Installation:** PWA Next.js dapat dipasang langsung ke layar utama (*Add to Home Screen*) peramban siswa melalui alamat IP lokal server tanpa koneksi internet sama sekali.
 
-### B. Isolasi Data Sekolah (Zero-Config Multitenancy)
+### Isolasi Data Sekolah (Zero-Config Multitenancy)
 
 * Setiap laptop guru menjalankan instans *local database SQLite* (`dyslexiai_local.db`) mandiri.
-* Dengan demikian, kerahasiaan data anak di masing-masing sekolah terjaga secara penuh, aman, dan terisolasi secara struktural tanpa risiko kebocoran data keluar ataupun bentrokan konfigurasi IP eksternal.
+* Model autentikasi berbasis `teacher_id` memastikan data siswa satu guru tidak bisa diakses oleh guru lain meskipun terhubung ke jaringan lokal yang sama.
+* Data anak terjaga kerahasiaannya secara penuh — tidak ada data yang keluar ke server eksternal.
+
+---
+
+## 14. Status Sprint & Roadmap
+
+| Sprint | Fokus | Status |
+|---|---|---|
+| **Sprint 0** | Bug fixes, port alignment (3001/3002), SQLite stabilisasi | Selesai |
+| **Sprint 1** | Adaptive Engine (Spaced Repetition), Scoring Service | Selesai |
+| **Sprint 2** | TrOCR ONNX, Ollama Vision integration, Image Preprocessing | Selesai |
+| **Sprint 3** | Game Memory Card, Halaman Result visualisasi, UI/UX refinement | Selesai |
+| **Sprint 3.5** | Auth Guru (bcrypt + HMAC token), DyslexiaFuzzyMatcher engine, PWA Service Worker | **Selesai** |
+| **Sprint 4** | IoT Smart Writing Grip (ESP32 + MPU6050 + MQTT) | Belum dimulai (tunggu hardware) |
+
+---
+
+## 15. Success Metrics
+
+| Metric | Target | Keterangan |
+|---|---|---|
+| **System Uptime** | 99.5% | Ketersediaan server lokal di sekolah pilot |
+| **Average Response Time** | < 800ms | Latensi API dari kamera ke hasil |
+| **OCR Accuracy** | > 85% | Character Error Rate pada dataset Indonesia |
+| **Device Compatibility** | 90%+ | % HP Android yang bekerja tanpa masalah |
+| **User Satisfaction** | > 4.0/5.0 | Skor feedback guru |
+| **Data Sync Reliability** | 100% | Zero data loss saat offline-online |
+| **Offline Functionality** | 100% | Sistem bekerja penuh tanpa internet |
+| **Student Engagement** | > 80% | % siswa menyelesaikan semua 5 level |
+
+---
+
+**Terakhir Diperbarui:** 9 Juni 2026
+**Versi Dokumen:** 2.0 (Revisi Lengkap — Auth System + Fuzzy Matching + PWA Offline)
+**Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)

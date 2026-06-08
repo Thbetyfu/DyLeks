@@ -7,7 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import BatMascot from '../components/BatMascot';
 import ButterflyMascot from '../components/ButterflyMascot';
 import ThemeToggle from '../components/ThemeToggle';
-
+import { getRandomTarget, buildQuizOptions } from '../lib/wordBank';
 
 const GlowingStar = () => (
   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -91,51 +91,15 @@ export default function Latihan() {
     }
   };
 
+  const loadNewQuestion = (level: number, excludeTarget?: string) => {
+    const wordItem = getRandomTarget(level, excludeTarget);
+    const opts = buildQuizOptions(level, wordItem.target);
+    setCurrentTarget(wordItem.target);
+    setCurrentOptions(opts);
+  };
+
   const handleLanjut = () => {
-    let target = '';
-    let options: string[] = [];
-
-    if (recommendedLevel === 1) {
-      const vowels = ['A', 'I', 'U', 'E', 'O'];
-      target = vowels[Math.floor(Math.random() * vowels.length)];
-      options = vowels;
-    } else if (recommendedLevel === 2) {
-      const words = ['BUKU', 'MAMA', 'IBU', 'BOLA', 'BATU'];
-      target = words[Math.floor(Math.random() * words.length)];
-  
-      const distractors = ['BAKU', 'SAMA', 'PAPA', 'BALA', 'KUKU', 'NANA', 'Pola', 'Ratu']
-        .filter(w => w.toUpperCase() !== target.toUpperCase())
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      options = [target, ...distractors].sort(() => Math.random() - 0.5);
-    } else if (recommendedLevel === 3) {
-      const words = ['BAN', 'BUS', 'CAT', 'MOBIL', 'KAPAL'];
-      target = words[Math.floor(Math.random() * words.length)];
-      const distractors = ['BAK', 'BAS', 'CAR', 'MODEL', 'KAPAS', 'KAPUR', 'KAPAN', 'MODAL']
-        .filter(w => w.toUpperCase() !== target.toUpperCase())
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      options = [target, ...distractors].sort(() => Math.random() - 0.5);
-    } else if (recommendedLevel === 4) {
-      const words = ['PISANG', 'NYANYI', 'KHAWATIR', 'SYARAT', 'NYAMUK'];
-      target = words[Math.floor(Math.random() * words.length)];
-      const distractors = ['PISAN', 'NANI', 'KAWATIR', 'SARAT', 'NAMUK', 'PIANG', 'NYALI', 'SAYAT']
-        .filter(w => w.toUpperCase() !== target.toUpperCase())
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      options = [target, ...distractors].sort(() => Math.random() - 0.5);
-    } else if (recommendedLevel === 5) {
-      const words = ['MENULIS', 'MEMBACA', 'BERMAIN', 'BERLARI', 'TERJATUH', 'TERBUKA', 'DIBACA', 'DITULIS', 'AMBILKAN', 'MEWARNAI'];
-      target = words[Math.floor(Math.random() * words.length)];
-      const distractors = ['PENULIS', 'PEMBACA', 'MAINAN', 'LARI', 'JATUH', 'BUKA', 'BACA', 'TULIS', 'AMBIL', 'WARNA']
-        .filter(w => w.toUpperCase() !== target.toUpperCase())
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
-      options = [target, ...distractors].sort(() => Math.random() - 0.5);
-    }
-
-    setCurrentTarget(target);
-    setCurrentOptions(options);
+    loadNewQuestion(recommendedLevel);
     setView('learning');
   };
 
@@ -213,72 +177,14 @@ export default function Latihan() {
     }
 
     if (recommendedLevel >= 1 && recommendedLevel <= 5) {
-      
       stopCamera();
-      let nextTarget = '';
-      let nextOptions: string[] = [];
-
-      
       setWrongAttemptsMap({});
       setHiddenOptions([]);
       setSelectedOption(null);
       setIsCorrect(null);
 
-      if (recommendedLevel === 1) {
-        const vowels = ['A', 'I', 'U', 'E', 'O'];
-        nextTarget = vowels[Math.floor(Math.random() * vowels.length)];
-        while (nextTarget === currentTarget) {
-          nextTarget = vowels[Math.floor(Math.random() * vowels.length)];
-        }
-        nextOptions = vowels;
-      } else if (recommendedLevel === 2) {
-        const words = ['BUKU', 'MAMA', 'IBU', 'BOLA', 'BATU'];
-        nextTarget = words[Math.floor(Math.random() * words.length)];
-        while (nextTarget === currentTarget) {
-          nextTarget = words[Math.floor(Math.random() * words.length)];
-        }
-        const distractors = ['BAKU', 'SAMA', 'PAPA', 'BALA', 'KUKU', 'NANA', 'Pola', 'Ratu']
-          .filter(w => w.toUpperCase() !== nextTarget.toUpperCase())
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-        nextOptions = [nextTarget, ...distractors].sort(() => Math.random() - 0.5);
-      } else if (recommendedLevel === 3) {
-        const words = ['BAN', 'BUS', 'CAT', 'MOBIL', 'KAPAL'];
-        nextTarget = words[Math.floor(Math.random() * words.length)];
-        while (nextTarget === currentTarget) {
-          nextTarget = words[Math.floor(Math.random() * words.length)];
-        }
-        const distractors = ['BAK', 'BAS', 'CAR', 'MODEL', 'KAPAS', 'KAPUR', 'KAPAN', 'MODAL']
-          .filter(w => w.toUpperCase() !== nextTarget.toUpperCase())
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-        nextOptions = [nextTarget, ...distractors].sort(() => Math.random() - 0.5);
-      } else if (recommendedLevel === 4) {
-        const words = ['PISANG', 'NYANYI', 'KHAWATIR', 'SYARAT', 'NYAMUK'];
-        nextTarget = words[Math.floor(Math.random() * words.length)];
-        while (nextTarget === currentTarget) {
-          nextTarget = words[Math.floor(Math.random() * words.length)];
-        }
-        const distractors = ['PISAN', 'NANI', 'KAWATIR', 'SARAT', 'NAMUK', 'PIANG', 'NYALI', 'SAYAT']
-          .filter(w => w.toUpperCase() !== nextTarget.toUpperCase())
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-        nextOptions = [nextTarget, ...distractors].sort(() => Math.random() - 0.5);
-      } else {
-        const words = ['MENULIS', 'MEMBACA', 'BERMAIN', 'BERLARI', 'TERJATUH', 'TERBUKA', 'DIBACA', 'DITULIS', 'AMBILKAN', 'MEWARNAI'];
-        nextTarget = words[Math.floor(Math.random() * words.length)];
-        while (nextTarget === currentTarget) {
-          nextTarget = words[Math.floor(Math.random() * words.length)];
-        }
-        const distractors = ['PENULIS', 'PEMBACA', 'MAINAN', 'LARI', 'JATUH', 'BUKA', 'BACA', 'TULIS', 'AMBIL', 'WARNA']
-          .filter(w => w.toUpperCase() !== nextTarget.toUpperCase())
-          .sort(() => Math.random() - 0.5)
-          .slice(0, 3);
-        nextOptions = [nextTarget, ...distractors].sort(() => Math.random() - 0.5);
-      }
+      loadNewQuestion(recommendedLevel, currentTarget);
 
-      setCurrentTarget(nextTarget);
-      setCurrentOptions(nextOptions);
       const nextCount = currentQuestionCount + 1;
       setCurrentQuestionCount(nextCount);
 

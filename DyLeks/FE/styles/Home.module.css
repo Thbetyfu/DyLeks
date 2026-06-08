@@ -96,6 +96,35 @@
   transform: translateY(1px);
 }
 
+.copilotButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 16px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 360px;
+  box-shadow: var(--glass-shadow);
+}
+
+.copilotButton:hover {
+  background: var(--primary);
+  color: white;
+  border-color: transparent;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px hsla(230, 100%, 65%, 0.25);
+}
+
 .iconRight {
   width: 20px;
   height: 20px;

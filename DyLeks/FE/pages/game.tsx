@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import { useRouter } from 'next/router';
 import styles from '../styles/Game.module.css';
+import { WORD_BANK } from '../lib/wordBank';
 
 interface Card {
   id: number;
@@ -10,35 +11,47 @@ interface Card {
   isMatched: boolean;
 }
 
-const VOCAB_PAIRS = [
-  { value: 'BA' },
-  { value: 'BI' },
-  { value: 'BU' },
-  { value: 'BO' }
-];
-
 export default function Game() {
   const router = useRouter();
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [cards, setCards] = useState<Card[]>([]);
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [score, setScore] = useState(0);
   const [matchedPairs, setMatchedPairs] = useState(0);
   const [showReward, setShowReward] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [moves, setMoves] = useState(0);
 
   useEffect(() => {
     setMounted(true);
-    initializeGame();
+    // Auto-load level dari hasil screening jika ada
+    const stored = sessionStorage.getItem('dyslexia_result');
+    if (stored) {
+      const data = JSON.parse(stored);
+      setSelectedLevel(data.recommended_level || 1);
+    }
   }, []);
 
-  const initializeGame = () => {
-    // Gandakan pasangan dan acak
-    const deck = [...VOCAB_PAIRS, ...VOCAB_PAIRS]
-      .map((item, index) => ({
+  useEffect(() => {
+    if (selectedLevel !== null) {
+      initializeGame(selectedLevel);
+    }
+  }, [selectedLevel]);
+
+  const initializeGame = (level: number) => {
+    const levelData = WORD_BANK[level] || WORD_BANK[1];
+    // Ambil 4 kata acak dari level ini untuk dijadikan pasangan kartu
+    const pool = [...levelData.targets]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 4)
+      .map(w => w.target);
+
+    const deck = [...pool, ...pool]
+      .map((value, index) => ({
         id: index,
-        value: item.value,
+        value,
         isFlipped: false,
-        isMatched: false
+        isMatched: false,
       }))
       .sort(() => Math.random() - 0.5);
 
@@ -46,6 +59,8 @@ export default function Game() {
     setSelectedCards([]);
     setMatchedPairs(0);
     setShowReward(false);
+    setScore(0);
+    setMoves(0);
   };
 
   const playSound = (text: string) => {
@@ -62,10 +77,7 @@ export default function Game() {
     const clickedCard = cards.find(c => c.id === id);
     if (!clickedCard || clickedCard.isFlipped || clickedCard.isMatched || selectedCards.length >= 2) return;
 
-    // Putar suara suku kata saat kartu dibuka
     playSound(clickedCard.value);
-
-    // Buka kartu
     const updatedCards = cards.map(c => c.id === id ? { ...c, isFlipped: true } : c);
     setCards(updatedCards);
 
@@ -73,16 +85,16 @@ export default function Game() {
     setSelectedCards(newSelected);
 
     if (newSelected.length === 2) {
+      setMoves(m => m + 1);
       const [firstId, secondId] = newSelected;
       const firstCard = cards.find(c => c.id === firstId);
       const secondCard = cards.find(c => c.id === secondId);
 
       if (firstCard && secondCard && firstCard.value === secondCard.value) {
-        // Pasangan COCOK
         setTimeout(() => {
-          setCards(prev => prev.map(c => 
-            c.id === firstId || c.id === secondId 
-              ? { ...c, isMatched: true, isFlipped: true } 
+          setCards(prev => prev.map(c =>
+            c.id === firstId || c.id === secondId
+              ? { ...c, isMatched: true, isFlipped: true }
               : c
           ));
           setScore(prev => prev + 10);
@@ -90,22 +102,19 @@ export default function Game() {
           setMatchedPairs(nextPairs);
           setSelectedCards([]);
 
-          if (nextPairs === VOCAB_PAIRS.length) {
-            // Semua pasangan cocok - Tampilkan reward
+          if (nextPairs === 4) {
             setTimeout(() => {
               setShowReward(true);
-              // Pemicu apresiasi lencana harian
               const currentStreak = parseInt(sessionStorage.getItem('game_streak') || '0') + 1;
               sessionStorage.setItem('game_streak', currentStreak.toString());
             }, 500);
           }
         }, 500);
       } else {
-        // Pasangan SALAH - Tutup kembali
         setTimeout(() => {
-          setCards(prev => prev.map(c => 
-            c.id === firstId || c.id === secondId 
-              ? { ...c, isFlipped: false } 
+          setCards(prev => prev.map(c =>
+            c.id === firstId || c.id === secondId
+              ? { ...c, isFlipped: false }
               : c
           ));
           setSelectedCards([]);
@@ -116,6 +125,43 @@ export default function Game() {
 
   if (!mounted) return null;
 
+  // Level Selection Screen
+  if (selectedLevel === null) {
+    return (
+      <div className={styles.container}>
+        <Head><title>Pilih Level - Game DyLeks</title></Head>
+        <header className={styles.header}>
+          <button className={styles.backButton} onClick={() => router.push('/latihan')}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <h1 className={styles.title}>Pilih Level Permainan</h1>
+        </header>
+        <main className={styles.gameArea}>
+          <p className={styles.instructions}>Pilih level yang sesuai kemampuanmu!</p>
+          <div className={styles.levelGrid}>
+            {[1, 2, 3, 4, 5].map(lvl => {
+              const data = WORD_BANK[lvl];
+              return (
+                <button
+                  key={lvl}
+                  id={`btn-level-${lvl}`}
+                  className={styles.levelCard}
+                  onClick={() => setSelectedLevel(lvl)}
+                >
+                  <span className={styles.levelNum}>Level {lvl}</span>
+                  <span className={styles.levelName}>{data.label}</span>
+                  <span className={styles.levelDesc}>{data.description}</span>
+                </button>
+              );
+            })}
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -123,30 +169,40 @@ export default function Game() {
       </Head>
 
       <header className={styles.header}>
-        <button className={styles.backButton} onClick={() => router.push('/latihan')}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M15 18L9 12L15 6" stroke="#5d3eb3" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        <button className={styles.backButton} onClick={() => setSelectedLevel(null)}>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M15 18L9 12L15 6" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <h1 className={styles.title}>Cari Pasangan Kata</h1>
+        <div>
+          <h1 className={styles.title}>Cari Pasangan Kata</h1>
+          <p className={styles.levelBadge}>{WORD_BANK[selectedLevel]?.label} — {WORD_BANK[selectedLevel]?.description}</p>
+        </div>
         <div className={styles.statsRow}>
           <div className={`${styles.statBadge} ${styles.scoreBadge}`}>
-            ⭐ {score} Poin
+            {score} Poin
+          </div>
+          <div className={styles.statBadge}>
+            {moves} Langkah
           </div>
         </div>
       </header>
 
       <main className={styles.gameArea}>
-        <p className={styles.instructions}>Temukan dua kartu dengan bunyi suku kata yang sama!</p>
+        <p className={styles.instructions}>Temukan dua kartu dengan bunyi yang sama!</p>
 
         <div className={styles.cardGrid}>
           {cards.map(card => (
             <div
               key={card.id}
+              id={`card-${card.id}`}
               className={`${styles.card} ${card.isFlipped ? styles.cardFlipped : ''} ${card.isMatched ? styles.cardMatched : ''}`}
               onClick={() => handleCardClick(card.id)}
             >
-              {card.isFlipped || card.isMatched ? card.value : '❓'}
+              <div className={styles.cardInner}>
+                <div className={styles.cardFront}>?</div>
+                <div className={styles.cardBack}>{card.value}</div>
+              </div>
             </div>
           ))}
         </div>
@@ -155,17 +211,22 @@ export default function Game() {
       {showReward && (
         <div className={styles.rewardModal}>
           <div className={styles.modalContent}>
-            <svg className={styles.badgeIcon} viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <svg className={styles.badgeIcon} viewBox="0 0 100 100" fill="none">
               <circle cx="50" cy="50" r="45" fill="#FFD983" stroke="#FFAC33" strokeWidth="4" />
               <path d="M50 20L58.8 38.2L78.8 41L64.4 55.2L67.8 75.2L50 65.8L32.2 75.2L35.6 55.2L21.2 41L41.2 38.2L50 20Z" fill="#FFAC33" />
             </svg>
             <h2 className={styles.modalTitle}>Hebat Sekali!</h2>
             <p className={styles.modalText}>
-              Kamu berhasil mencocokkan semua kartu dan mendapatkan tambahan **{score} Poin** latihan!
+              {moves <= 5 ? 'Kamu sangat cerdas!' : 'Terus berlatih ya!'} Skor: {score} poin dalam {moves} langkah!
             </p>
-            <button className={styles.playAgainBtn} onClick={initializeGame}>
-              Main Lagi
-            </button>
+            <div className={styles.modalActions}>
+              <button className={styles.playAgainBtn} onClick={() => initializeGame(selectedLevel)}>
+                Main Lagi
+              </button>
+              <button className={styles.nextLevelBtn} onClick={() => setSelectedLevel(Math.min(5, selectedLevel + 1))}>
+                Level Berikutnya
+              </button>
+            </div>
           </div>
         </div>
       )}
