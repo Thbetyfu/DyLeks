@@ -32,6 +32,19 @@ Di daerah 3T, tantangannya berlipat ganda:
 * **Physical-to-Digital Pipeline:** Anak tetap menulis di atas kertas fisik menggunakan pensil untuk melatih motorik halus, lalu hasilnya difoto menggunakan kamera *smartphone* untuk dikirim ke *local server* laptop guna dianalisis.
 * **Privacy-First Edge Computing:** Seluruh inferensi AI berjalan di sisi lokal perangkat, menjamin keamanan data tumbuh kembang anak-anak di pedalaman.
 
+### 2.1 Justifikasi Desain: Mengapa Berbasis Web (PWA) & Gamifikasi Terlebih Dahulu?
+
+Saat ini, fokus pengembangan ekosistem **DyLeks** diarahkan sepenuhnya pada optimalisasi aplikasi web responsif (**PWA**) dan **gamifikasi interaktif**, sementara integrasi perangkat keras IoT (Smart Writing Grip) dideprioritaskan. Berikut adalah alasan strategis di balik keputusan ini:
+
+1. **Kendala Distribusi & Pemeliharaan Hardware di Daerah 3T:** 
+   Penyediaan perangkat fisik seperti ESP32, sensor akselerometer IMU MPU6050, dan baterai membutuhkan biaya produksi, perakitan, dan rantai pasokan logistik yang sulit dijangkau di wilayah pedalaman. Jika terjadi kerusakan hardware di lapangan, ketiadaan dukungan teknis atau suku cadang lokal akan membuat fitur tersebut tidak berkelanjutan.
+2. **Keteraksesan Instan Tanpa Hambatan (Zero-Config):**
+   Dengan berfokus pada teknologi Web PWA, platform ini dapat langsung diakses oleh guru dan siswa menggunakan gawai yang sudah mereka miliki (smartphone lama, tablet murah, atau laptop guru) melalui jaringan Wi-Fi lokal kelas tanpa perlu instalasi driver, flashing firmware, atau pengisian daya baterai hardware eksternal.
+3. **Pemberdayaan Gamifikasi Edukatif yang Andal:**
+   Gamifikasi multisensori (seperti memori kartu kata dan audio verbal Bahasa Indonesia) terbukti lebih efisien untuk menarik atensi anak disleksia dan memberikan umpan balik (feedback) seketika secara kognitif. Pendekatan perangkat lunak ini lebih stabil, andal, dan langsung berdampak secara psikopedagogis dibandingkan pembacaan sensor grip motorik halus yang rentan noise.
+4. **Mixed Content & Reliabilitas Luring:**
+   Infrastruktur web luring menggunakan strategi caching Service Worker Next.js memastikan 100% data tersimpan di IndexedDB saat anak berlatih secara offline, menjaga kontinuitas pengajaran di daerah 3T dengan kegagalan sistem yang mendekati nol.
+
 ---
 
 ## 3. Tech Stack & Engineering Excellence
@@ -394,7 +407,7 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 | **Sprint 2** | TrOCR ONNX, Ollama Vision integration, Image Preprocessing | Selesai |
 | **Sprint 3** | Game Memory Card, Halaman Result visualisasi, UI/UX refinement | Selesai |
 | **Sprint 3.5** | Auth Guru (bcrypt + HMAC token), DyslexiaFuzzyMatcher engine, PWA Service Worker | **Selesai** |
-| **Sprint 4** | IoT Smart Writing Grip (ESP32 + MPU6050 + MQTT) | Belum dimulai (tunggu hardware) |
+| **Sprint 4** | IoT Smart Writing Grip (ESP32 + MPU6050 + MQTT) | Dideprioritaskan (Fokus pada Web & Game) |
 
 ---
 
@@ -414,5 +427,5 @@ Untuk memenuhi karakteristik daerah 3T (*Zero-Internet*) dan mematuhi batasan ke
 ---
 
 **Terakhir Diperbarui:** 9 Juni 2026
-**Versi Dokumen:** 2.0 (Revisi Lengkap — Auth System + Fuzzy Matching + PWA Offline)
+**Versi Dokumen:** 2.1 (Revisi Lengkap — Justifikasi Web-First + Fokus Gamifikasi)
 **Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)

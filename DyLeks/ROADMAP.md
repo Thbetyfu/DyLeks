@@ -588,19 +588,15 @@ Untuk memastikan kelancaran pengembangan ekosistem **DyLeks** luring, rencana ke
     *   [x] Rancang halaman `FE/pages/game.tsx` untuk sistem reward (poin, badge, streak) guna menstimulasi motivasi belajar anak disleksia.
     *   [x] Sempurnakan halaman `FE/pages/result.tsx` agar menampilkan grafik distribusi pola kesalahan secara intuitif (glassmorphic styling).
 
-### 🔌 Sprint 4: IoT Smart Writing Grip & Telemetry Integration (Fase Akhir)
-*Target: Integrasi siber-fisik telemetri sensor grip pensil setelah perangkat keras siap.*
+### 🔌 Sprint 4: IoT Smart Writing Grip & Telemetry Integration (Dideprioritaskan / Fase Akhir)
+*Target: Integrasi siber-fisik telemetri sensor grip pensil ditangguhkan demi optimalisasi stabilitas Web PWA dan Gamifikasi.*
 
-*   **Firmware & MQTT Broker Setup:**
-    *   [ ] Rancang firmware ESP32 untuk membaca data mentah 6-axis IMU MPU6050 (akselerasi dan rotasi).
-    *   [ ] Setup Mosquitto MQTT Broker lokal di laptop server guru untuk menangkap data stream sensor.
-    *   [ ] Buat handler MQTT asinkron di `BE/app/services/mqtt_handler.py`.
-*   **Bio-Kinesthetic Data Analysis:**
-    *   [ ] Selesaikan modul `BE/app/services/kinesthetic_analyzer.py` untuk ekstraksi fitur tremor kognitif, jeda penulisan (*hesitation*), dan pembalikan sapuan tangan (*stroke inversion*).
-    *   [ ] Integrasikan metrik kinematik ini ke dalam `scoring_service.py` untuk analisis risiko multivariat gabungan (Visual + Kinestetik).
+*   **Pernyataan Penangguhan:**
+    *   Pengembangan IoT Smart Writing Grip dipindahkan ke backlog prioritas rendah karena kendala ketersediaan hardware fisik, biaya produksi, serta tantangan pemeliharaan jangka panjang di wilayah pelosok 3T.
+    *   Fokus saat ini dialihkan 100% untuk menyempurnakan keandalan game interaktif, akurasi skrining OCR luring, dan ketahanan sinkronisasi data Next.js PWA client-server.
 
 ---
 
-**Terakhir Diperbarui:** 1 Juni 2026  
-**Versi Dokumen:** 1.2 (Revisi Penjadwalan IoT Terakhir)  
+**Terakhir Diperbarui:** 9 Juni 2026  
+**Versi Dokumen:** 1.3 (Revisi Penjadwalan & Fokus Web-First)  
 **Dikelola Oleh:** Tim Pengembang DyLeks (TELULANG)
