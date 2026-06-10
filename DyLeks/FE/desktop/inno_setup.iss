@@ -24,7 +24,7 @@ OutputBaseFilename=DyLeks_Setup_v2.0
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
-SetupIconFile=favicon.ico
+; SetupIconFile=favicon.ico
 
 [Languages]
 Name: "indonesian"; MessagesFile: "compiler:Languages\Indonesian.isl"

@@ -11,6 +11,7 @@ const { app, BrowserWindow } = require('electron');
 const { spawn, exec } = require('child_process');
 const path = require('path');
 const http = require('http');
+const fs = require('fs');
 
 let mainWindow;
 let backendProcess;
@@ -49,8 +50,16 @@ function killProcessOnPort(port) {
 
 function startServers() {
   const isProd = app.isPackaged;
-  const beDir = path.join(__dirname, '..', '..', 'BE');
-  const feDir = path.join(__dirname, '..');
+  
+  // Deteksi letak direktori backend dan frontend secara dinamis untuk mode terinstalasi
+  let beDir = path.join(__dirname, 'backend');
+  let feDir = path.join(__dirname, 'frontend');
+
+  if (!fs.existsSync(beDir)) {
+    // Mode Development (dari FE/desktop)
+    beDir = path.join(__dirname, '..', '..', 'BE');
+    feDir = path.join(__dirname, '..');
+  }
 
   console.log(`[Electron] Memulai server dalam mode: ${isProd ? 'Production' : 'Development'}`);
 
