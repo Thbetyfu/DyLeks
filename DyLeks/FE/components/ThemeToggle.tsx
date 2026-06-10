@@ -45,7 +45,8 @@ const ThemeToggle: React.FC = () => {
           fontWeight: 'bold', 
           color: isDark ? 'var(--text-muted)' : 'var(--text-main)',
           transition: 'color 0.3s ease',
-          opacity: isDark ? 0.6 : 1
+          opacity: isDark ? 0.6 : 1,
+          flexShrink: 0
         }}
       >
         Day
@@ -57,17 +58,21 @@ const ThemeToggle: React.FC = () => {
         style={{
           width: '64px',
           height: '34px',
+          minHeight: '34px',
+          minWidth: '64px',
           borderRadius: '17px',
           background: isDark ? 'linear-gradient(135deg, #3a416f 0%, #1d2142 100%)' : 'linear-gradient(135deg, #ffd166 0%, #ff8a5b 100%)',
           border: '1.5px solid var(--glass-border)',
           boxShadow: 'var(--glass-shadow), inset 0 2px 4px rgba(0, 0, 0, 0.1)',
           cursor: 'pointer',
           padding: '3px',
+          margin: 0,
           position: 'relative',
           display: 'flex',
           alignItems: 'center',
           transition: 'background 0.4s ease, border-color 0.4s ease',
-          outline: 'none'
+          outline: 'none',
+          flexShrink: 0
         }}
       >
         {isDark && (
@@ -106,7 +111,8 @@ const ThemeToggle: React.FC = () => {
           fontWeight: 'bold', 
           color: isDark ? 'var(--text-main)' : 'var(--text-muted)',
           transition: 'color 0.3s ease',
-          opacity: isDark ? 1 : 0.6
+          opacity: isDark ? 1 : 0.6,
+          flexShrink: 0
         }}
       >
         Night
