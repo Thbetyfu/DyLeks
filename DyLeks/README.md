@@ -323,8 +323,8 @@ Untuk memaksimalkan penggunaan DyLeks di daerah 3T yang serba luring (tanpa inte
 ### Tahap 1: Persiapan Kelas (5 Menit Sebelum Pembelajaran)
 1. **Nyalakan Hotspot Lokal:** Guru menyalakan router Wi-Fi kelas luring (atau mengaktifkan hotspot pribadi dari smartphone guru tanpa kuota data).
 2. **Koneksikan Perangkat:** Hubungkan laptop guru (Server) ke jaringan Wi-Fi lokal kelas tersebut.
-3. **Nyalakan Server Hub DyLeks:** Guru menjalankan skrip `setup_services.bat` (atau menjalankan manual Next.js & FastAPI luring).
-4. **Buka Dashboard:** Guru membuka peramban laptop dan mengakses `http://localhost:3001/dashboard`, lalu masuk menggunakan kredensial guru.
+3. **Nyalakan Server Hub DyLeks:** Guru mengklik ganda (double-click) berkas `Mulai_DyLeks.bat` di direktori utama proyek untuk menyalakan backend dan frontend secara otomatis.
+4. **Buka Dashboard:** Setelah peluncur otomatis berjalan, browser laptop akan otomatis terbuka mengarah ke halaman Dashboard Guru (`http://localhost:3001/dashboard`). Masuk menggunakan kredensial guru.
 
 ### Tahap 2: Sambungan Mandiri Siswa (5 Menit Pertama Kelas)
 1. **Hubungkan Wi-Fi Siswa:** Anak-anak menyalakan Wi-Fi pada smartphone masing-masing dan menyambungkannya ke Wi-Fi kelas luring yang sama.
@@ -346,18 +346,63 @@ Untuk memaksimalkan penggunaan DyLeks di daerah 3T yang serba luring (tanpa inte
 1. **Sesi Latihan Berakhir:** Siswa menyelesaikan pembelajaran harian mereka. Seluruh data skor dan jenis kesalahan tersimpan rapi secara lokal di database SQLite laptop guru.
 2. **Review Dashboard Guru:** Guru membuka panel detail siswa di Dashboard Guru laptop untuk meninjau jenis kesalahan anak hari itu (misal: "sering membalik huruf b/d").
 3. **Catatan Pedagogis Orton-Gillingham:** Guru langsung menuliskan catatan evaluasi intervensi (seperti: *"rekomendasi latihan taktil menulis huruf b/d di atas pasir di kelas esok hari"*). Catatan ini tersimpan secara terenkripsi transparan di database demi keamanan privasi anak.
-4. **Shutdown Server:** Guru mematikan server lokal dan router Wi-Fi. Kelas ditutup dengan aman.
+4. **Shutdown Server:** Guru menutup jendela CMD `Mulai_DyLeks.bat` dengan menekan tombol apa saja. Sistem akan otomatis membersihkan semua port dan menghentikan seluruh server latar belakang. Matikan router Wi-Fi kelas.
 
 ---
 
-## 11. Langkah Memulai Pengembangan (Local Development Guide)
+## 11. Panduan Menjalankan Server Luring (Deployment & Run Guide)
 
-### Prasyarat Infrastruktur Kelas 3T (Simulasi)
+Untuk memudahkan pengoperasian di sekolah pelosok, kami menyediakan dua cara untuk menjalankan ekosistem DyLeks:
 
+### Cara 1: Menggunakan Peluncur Satu-Klik (Rekomendasi untuk Guru)
+
+Kami telah membuat skrip peluncur otomatis [Mulai_DyLeks.bat](file:///d:/4. Thoriq_KULIAH/1.Lomba Thoriq/SEMESTER 4/05. Samsung/DyLeks/Mulai_DyLeks.bat) di folder utama proyek.
+
+1. Hubungkan Laptop Guru ke Wi-Fi kelas luring.
+2. Klik ganda (double-click) berkas `Mulai_DyLeks.bat`.
+3. Skrip otomatis akan:
+   - Membersihkan port 3001 & 3002 dari proses zombie sebelumnya.
+   - Menjalankan backend FastAPI luring.
+   - Menjalankan frontend Next.js luring.
+   - Membuka peramban (browser) ke halaman Dashboard Guru (`http://localhost:3001/dashboard`).
+4. **Untuk mematikan:** Tekan tombol apa saja pada jendela CMD peluncur tersebut, dan sistem akan menghentikan seluruh server latar belakang dengan aman.
+
+---
+
+### Cara 2: Pengembangan Manual (Untuk Developer / Pengembang)
+
+Jika Anda ingin melakukan debugging atau pengembangan kode secara manual, ikuti langkah-langkah di bawah ini:
+
+#### A. Prasyarat Infrastruktur Kelas 3T (Simulasi)
 1. Sediakan satu router Wi-Fi tanpa internet (atau aktifkan fitur *Tethering/Hotspot* dari *smartphone*).
 2. Hubungkan Laptop (Server) dan *smartphone* (Client) ke jaringan Wi-Fi yang sama.
 
-### Menjalankan Backend (Laptop Guru — Terminal A)
+#### B. Menjalankan Backend (Laptop Guru — Terminal A)
+```bash
+cd BE
+pip install -r requirements.txt
+python -m app.services.hardware_diagnostic  # Opsional: jalankan cek spesifikasi luring
+uvicorn app.main:app --host 0.0.0.0 --port 3002 --reload
+```
+Backend API tersedia di `http://localhost:3002` dan `http://[IP-LOKAL-LAPTOP]:3002`.
+
+#### C. Setup Teacher's Copilot (Opsional — Ollama)
+```bash
+# Install Ollama terlebih dahulu dari https://ollama.ai
+ollama run qwen1.5:1.8b
+# atau: ollama run phi3:mini
+```
+Pastikan URL Ollama di `BE/app/core/config.py` mengarah ke `http://localhost:11434`.
+
+#### D. Menjalankan Frontend (Terminal B)
+```bash
+cd FE
+npm install
+npm run dev
+# Dev server berjalan di http://localhost:3001
+```
+Dari smartphone yang terhubung ke Wi-Fi yang sama, buka `http://[IP-LOKAL-LAPTOP]:3001`.
+Klik **"Add to Home Screen"** di browser untuk menginstall sebagai PWA offline.minal A)
 
 ```bash
 cd BE
