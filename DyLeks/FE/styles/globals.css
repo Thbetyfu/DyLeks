@@ -85,46 +85,55 @@
    Coklat gelap hangat, bukan navy dingin. Mengurangi halation.
    ============================================================ */
 [data-theme='dark'] {
-  --bg-color:   #1C1410;
-  --bg-main:    #1C1410;
-  --bg-surface: #2E2018;
-  --bg-card:    #241A14;
+  /* === BACKGROUND === */
+  --bg-color:   #0F1524;        /* Deep midnight slate (not pitch black) */
+  --bg-main:    #0F1524;
+  --bg-surface: #1B2236;        /* Sleek card background */
+  --bg-card:    #151C2C;        /* Slightly darker for contrast card */
 
-  --text-main:      #E8D9C0;
-  --text-heading:   #F5ECD8;
-  --text-muted:     #B09070;
-  --text-secondary: #B09070;
-  --text-light:     #8A6A55;
+  /* === TEKS === */
+  --text-main:      #D8E2F2;        /* Soft silver blue (no halation/high contrast glare) */
+  --text-heading:   #F1F5FD;        /* Crisp but soft off-white */
+  --text-muted:     #7F91B1;        /* Muted cool blue-gray */
+  --text-secondary: #7F91B1;
+  --text-light:     #5E6F8E;        /* Lighter muted for placeholders */
 
-  --primary:        #6BA3D8;
-  --primary-light:  rgba(107, 163, 216, 0.15);
-  --primary-hover:  #87BDE8;
-  --btn-primary:    #6BA3D8;
-  --track-bg:       rgba(107, 163, 216, 0.18);
+  /* === WARNA AKSI PRIMER === */
+  --primary:        #4A92E6;        /* Beautiful soft royal blue (clear, readable, premium) */
+  --primary-light:  rgba(74, 146, 230, 0.15); /* Very light tint for backgrounds */
+  --primary-hover:  #6CA7ED;        /* Lighter hover */
+  --btn-primary:    #4A92E6;
+  --track-bg:       rgba(74, 146, 230, 0.18);
 
-  --color-success:  #5DB87A;
-  --success-light:  rgba(93, 184, 122, 0.15);
-  --success-icon:   #5DB87A;
+  /* === WARNA POSITIF === */
+  --color-success:  #36B37E;        /* Vibrant but calming emerald green */
+  --success-light:  rgba(54, 179, 126, 0.12);
+  --success-icon:   #36B37E;
 
-  --color-warning:  #E8A030;
-  --warning-light:  rgba(232, 160, 48, 0.15);
+  /* === WARNA PERINGATAN === */
+  --color-warning:  #FFAB00;        /* Bright but warm gold */
+  --warning-light:  rgba(255, 171, 0, 0.12);
 
-  --color-danger:   #D46055;
-  --error-light:    rgba(212, 96, 85, 0.15);
+  /* === WARNA KESALAHAN === */
+  --color-danger:   #FF5630;        /* Soft coral-red */
+  --error-light:    rgba(255, 86, 48, 0.12);
 
-  --accent:         #E07535;
-  --accent-star:    #F0B430;
-  --highlight:      #F0B430;
-  --star-color:     #6BA3D8;
+  /* === AKSEN === */
+  --accent:         #FF7A00;        /* Energetic bright orange */
+  --accent-star:    #FFC400;        /* Shiny star yellow */
+  --highlight:      #FFC400;
+  --star-color:     #4A92E6;
 
-  --surface:        rgba(46, 32, 24, 0.92);
-  --surface-strong: rgba(46, 32, 24, 0.98);
-  --card-bg-2:      rgba(36, 26, 20, 0.98);
-  --glass-bg:       rgba(28, 20, 16, 0.88);
-  --glass-border:   rgba(255, 200, 150, 0.12);
-  --glass-shadow:   0 4px 20px rgba(0, 0, 0, 0.28);
+  /* === PERMUKAAN & GLASSMORPHISM === */
+  --surface:        rgba(27, 34, 54, 0.90);
+  --surface-strong: rgba(27, 34, 54, 0.97);
+  --card-bg-2:      rgba(21, 28, 44, 0.98);
+  --glass-bg:       rgba(15, 21, 36, 0.88);
+  --glass-border:   rgba(74, 146, 230, 0.18);
+  --glass-shadow:   0 8px 32px rgba(0, 0, 0, 0.40);
 
-  --bg-gradient: linear-gradient(160deg, #1C1410 0%, #241A14 60%, #1C1410 100%);
+  /* === GRADIEN LATAR === */
+  --bg-gradient: linear-gradient(160deg, #0F1524 0%, #151C2C 60%, #0F1524 100%);
 }
 
 /* ============================================================
