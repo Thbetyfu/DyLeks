@@ -25,16 +25,55 @@ npm --version
 
 ---
 
-## LANGKAH 1 — CLONE / BUKA PROJECT
+## LANGKAH 0 — CLONE PROJECT (Pertama Kali)
 
-Jika belum punya file project, clone dari repository:
+Proyek DyLeks kini terdiri dari **4 repositori GitHub terpisah** yang terhubung lewat Git Submodules.
+Gunakan perintah berikut untuk meng-clone keseluruhan proyek sekaligus beserta semua sub-sistemnya:
 
 ```powershell
-git clone <URL_REPOSITORY>
-cd DyLeks
+git clone --recursive https://github.com/Thbetyfu/DyLeks-PROJECT.git
+cd DyLeks-PROJECT
 ```
 
-Jika sudah punya foldernya, cukup buka folder `DyLeks` di terminal.
+> Opsi `--recursive` sangat penting — tanpanya, folder `Siswa/`, `Guru/`, dan `Psikolog/` akan kosong.
+
+Jika terlanjur clone tanpa `--recursive`, jalankan ini dari dalam folder project:
+
+```powershell
+git submodule update --init --recursive
+```
+
+### Link Repositori GitHub
+
+| Modul | Peran | URL Repositori |
+|---|---|---|
+| **DyLeks-PROJECT** | Root / Monorepo Utama | https://github.com/Thbetyfu/DyLeks-PROJECT |
+| **DYLEKS-SISWA** | Portal Siswa (FE + BE) | https://github.com/Thbetyfu/DYLEKS-SISWA |
+| **DYLEKS-GURU** | Portal Guru (FE + BE) | https://github.com/Thbetyfu/DYLEKS-GURU |
+| **DYLEKS-PSIKOLOG** | Portal Psikolog (FE + BE) | https://github.com/Thbetyfu/DYLEKS-PSIKOLOG |
+
+---
+
+## LANGKAH 1 — BUKA PROJECT
+
+Setelah clone selesai, masuk ke folder project:
+
+```powershell
+cd DyLeks-PROJECT
+```
+
+Struktur folder yang ada setelah clone berhasil:
+
+```
+DyLeks-PROJECT/
+├── Siswa/          (submodule - portal siswa)
+├── Guru/           (submodule - portal guru)
+├── Psikolog/       (submodule - portal psikolog)
+├── shared_db/      (database bersama)
+├── git_push_all.bat
+├── git_sync_all.bat
+└── Mulai_DyLeks.bat
+```
 
 ---
 
@@ -156,11 +195,17 @@ npm run dev
 
 ## PORT YANG DIGUNAKAN
 
-| Service | Port | URL |
-|---|---|---|
-| Backend API (FastAPI) | 3004 | http://localhost:3004 |
-| Frontend (Next.js) | 3003 | http://localhost:3003 |
-| API Docs (Swagger) | 3004 | http://localhost:3004/docs |
+| Peran | Service | Port | URL |
+|---|---|---|---|
+| **Siswa** | Frontend (Next.js) | 3003 | http://localhost:3003 |
+| **Siswa** | Backend API (FastAPI) | 3004 | http://localhost:3004 |
+| **Siswa** | API Docs (Swagger) | 3004 | http://localhost:3004/docs |
+| **Guru** | Frontend (Next.js) | 3005 | http://localhost:3005 |
+| **Guru** | Backend API (FastAPI) | 3006 | http://localhost:3006 |
+| **Guru** | API Docs (Swagger) | 3006 | http://localhost:3006/docs |
+| **Psikolog** | Frontend (Next.js) | 3007 | http://localhost:3007 |
+| **Psikolog** | Backend API (FastAPI) | 3008 | http://localhost:3008 |
+| **Psikolog** | API Docs (Swagger) | 3008 | http://localhost:3008/docs |
 
 ---
 
@@ -224,21 +269,35 @@ Jalankan ulang `npm install` di folder `FE`.
 ## STRUKTUR FOLDER PENTING
 
 ```
-DyLeks/
-├── BE/                     # Backend (Python/FastAPI)
-│   ├── app/               # Source code utama
-│   ├── tests/             # Unit test
-│   ├── requirements.txt   # Dependensi Python
-│   └── .env.example       # Template konfigurasi
+DyLeks-PROJECT/
+├── Siswa/                      # Submodule: Portal Siswa
+│   ├── BE/                    # Backend FastAPI (port 3004)
+│   │   ├── app/              # Source code Python
+│   │   ├── tests/            # Unit test (28 tests)
+│   │   └── requirements.txt  # Dependensi Python
+│   └── FE/                    # Frontend Next.js (port 3003)
+│       ├── pages/            # Halaman game & latihan
+│       ├── components/       # Komponen UI
+│       └── lib/              # sync_service.ts & wordBank.ts
 │
-├── FE/                     # Frontend (Next.js)
-│   ├── pages/             # Halaman aplikasi
-│   ├── components/        # Komponen UI
-│   └── package.json       # Dependensi Node.js
+├── Guru/                       # Submodule: Portal Guru
+│   ├── BE/                    # Backend FastAPI (port 3006)
+│   └── FE/                    # Frontend Next.js (port 3005)
+│       └── pages/index.tsx   # Dasbor analitik & QR generator
 │
-├── Mulai_DyLeks.bat        # Launcher otomatis (untuk guru)
-├── CARA_MENJALANKAN.md     # File ini
-└── README.md               # Dokumentasi lengkap project
+├── Psikolog/                   # Submodule: Portal Psikolog
+│   ├── BE/                    # Backend FastAPI (port 3008)
+│   └── FE/                    # Frontend Next.js (port 3007)
+│
+├── shared_db/                  # Database SQLite bersama lintas role
+│   └── dyleks_shared.db
+│
+├── git_push_all.bat            # Push ke semua repo sekaligus
+├── git_sync_all.bat            # Pull/sync dari semua repo sekaligus
+├── Mulai_DyLeks.bat            # Launcher otomatis (untuk guru)
+├── PenjelasanRepo.md           # Panduan arsitektur multi-repo
+├── CARA_MENJALANKAN.md         # File ini
+└── README.md                   # Dokumentasi lengkap project
 ```
 
 ---
