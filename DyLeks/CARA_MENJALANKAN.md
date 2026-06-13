@@ -218,7 +218,7 @@ cd BE
 python -m pytest -v
 ```
 
-Hasil yang diharapkan: **19 passed, 0 failed**
+Hasil yang diharapkan: **29 passed, 0 failed**
 
 ---
 
